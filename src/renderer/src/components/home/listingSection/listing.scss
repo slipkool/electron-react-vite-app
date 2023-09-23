@@ -1,0 +1,144 @@
+@import '../../../assets/styles/variables.scss';
+@import '../../../assets/styles/responsive.scss';
+
+.listingSection {
+  flex-basis: 70%;
+
+  .heading {
+    width: 100%;
+    justify-content: space-between;
+
+    h1 {
+      font-size: $h2FontSize;
+      color: $soft-color;
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      font-weight: 500;
+
+      &:hover {
+        border: 1px solid $soft-color;
+      }
+    }
+  }
+
+  .secContainer {
+    width: 100%;
+    margin: 1rem 0;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .singleItem {
+      position: relative;
+      width: 150px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      padding: 1rem;
+      border-radius: 10px;
+      background: $soft-bg;
+
+      @include lg {
+        width: 200px !important;
+      }
+
+      &:hover {
+        background: $dark-bg;
+        box-shadow: 0 2px 2px $dark-color;
+      }
+
+      img {
+        max-width: 100px;
+        height: 95px;
+      }
+
+      .icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: $soft-color;
+      }
+
+      h3 {
+        font-size: $h3FontSize;
+        color: $soft-color;
+        padding: 1rem 0;
+      }
+    }
+  }
+
+  .sellers {
+    width: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+
+    @include sm {
+      flex-direction: column;
+    }
+
+    .topSellers,
+    .featuredSellers {
+      .heading {
+        padding: 1rem 0;
+
+        .btn {
+          padding: 0.5rem 1rem;
+        }
+      }
+
+      .card {
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        background: $soft-bg;
+        gap: 1rem;
+        box-shadow: 0 2px 4px $dark-color;
+
+        @include lg {
+          flex-direction: column;
+        }
+
+        @include sm {
+          flex-direction: row;
+        }
+
+        .users {
+          padding-right: 1rem;
+          border-right: 2px solid $soft-color;
+
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid $dark-color;
+            transition: 0.5s ease;
+
+            &:hover {
+              transform: translateY(-10px);
+            }
+          }
+        }
+
+        .cardText {
+          span {
+            color: $inputColor;
+            font-weight: 500;
+
+            small {
+              font-weight: 400;
+
+              .date {
+                margin-left: 1rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

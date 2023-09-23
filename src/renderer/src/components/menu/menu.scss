@@ -1,0 +1,54 @@
+@import '../../assets/styles/variables.scss';
+@import '../../assets/styles/responsive.scss';
+
+.menu {
+  .trigger {
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 5px 15px;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .title {
+      /* font-size: 12px;
+      font-weight: 200;
+      color: $soft-color; */
+      text-transform: uppercase;
+      transition: $tran-05;
+
+      @include lg {
+        display: none;
+      }
+    }
+
+    .listItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      /* padding: 10px; */
+      border-radius: 5px;
+
+      &:hover {
+        background-color: #3f5159;
+        border-right: 5px #e84a5f solid;
+      }
+
+      .listItemTitle {
+        transition: $tran-05;
+
+        @include lg {
+          display: none;
+        }
+      }
+    }
+  }
+}

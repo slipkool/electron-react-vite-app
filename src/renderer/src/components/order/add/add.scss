@@ -1,0 +1,155 @@
+@import '../../../assets/styles/variables.scss';
+@import '../../../assets/styles/responsive.scss';
+
+.add {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.724);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .modal {
+    padding: 40px;
+    border-radius: 10px;
+    background-color: $main-bg;
+    position: relative;
+    width: 800px;
+    z-index: 5;
+
+    @include md {
+      width: 500px;
+    }
+
+    @include sm {
+      width: 250px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 24px;
+      color: $soft-color;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      /* max-width: 500px; */
+      justify-content: space-between;
+
+      .item {
+        width: 45%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+
+        @include lg {
+          width: 100%;
+        }
+
+        label {
+          font-size: 14px;
+        }
+
+        input,
+        select {
+          padding: 10px;
+          background-color: $main-bg;
+          color: white;
+          outline: none;
+          border: 1px solid $soft-color;
+          border-radius: 3px;
+        }
+
+        input[type='checkbox'] {
+          /* Add if not using autoprefixer */
+          -webkit-appearance: none;
+          /* Remove most all native input styles */
+          appearance: none;
+          /* For iOS < 15 */
+          background-color: $main-bg;
+          /* Not removed via appearance */
+          margin-top: 0.5rem;
+
+          font: inherit;
+          color: currentColor;
+          width: 1.15em;
+          height: 1.15em;
+          border: 0.15em solid currentColor;
+          border-radius: 0.15em;
+          transform: translateY(-0.075em);
+
+          display: grid;
+          place-content: center;
+        }
+
+        input[type='checkbox']::before {
+          content: '';
+          width: 1rem;
+          height: 1rem;
+          clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+          transform: scale(0);
+          transform-origin: bottom left;
+          transition: 120ms transform ease-in-out;
+          box-shadow: inset 1em 1em $soft-color;
+          /* Windows High Contrast Mode */
+          background-color: CanvasText;
+        }
+
+        input[type='checkbox']:checked::before {
+          transform: scale(1);
+        }
+
+        input[type='checkbox']:focus {
+          outline: max(2px, 0.15em) solid currentColor;
+          outline-offset: max(2px, 0.15em);
+        }
+      }
+
+      .item-grid {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-top: 4mm ridge rgba(42, 52, 71, 0.6);
+        padding-top: 1rem;
+
+        > .dataTable {
+          .MuiBox-root {
+            margin: 0;
+
+            .dataGrid.MuiDataGrid-root {
+              height: 300px;
+            }
+          }
+        }
+      }
+
+      .btn {
+        width: 100%;
+        padding: 10px;
+        cursor: pointer;
+        background: $soft-color;
+        color: $dark-color;
+
+        &:hover {
+          background: $soft-bg;
+          color: $soft-color;
+        }
+      }
+    }
+  }
+}

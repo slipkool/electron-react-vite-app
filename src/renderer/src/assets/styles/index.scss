@@ -1,0 +1,98 @@
+@import './variables.scss';
+@import './responsive.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.grid {
+  display: grid;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px $dark-color;
+  padding: 0.8rem 1rem;
+  color: $inputColor;
+  background: $soft-bg;
+
+  &:hover {
+    background: $main-color;
+    color: $textColor;
+  }
+}
+
+.error-message {
+  display: block;
+  color: tomato;
+  /* font-size: x-small; */
+}
+
+/* .main {
+  font-family: 'Inter', sans-serif;
+  background-color: $main-bg;
+  color: $main-color;
+} */
+
+.container {
+  display: flex;
+}
+
+.menuContainer {
+  width: 250px;
+  transition: $tran-05;
+  padding: 5px 20px;
+  border-right: 2px solid $soft-bg;
+
+  @include lg {
+    width: max-content;
+  }
+}
+
+.sidebar--close {
+  width: 80px;
+  transition: $tran-05;
+
+  .menu {
+    .item {
+      cursor: pointer;
+      .title {
+        opacity: 0;
+      }
+
+      .listItem {
+        .listItemTitle {
+          transition: $tran-05;
+          opacity: 0;
+        }
+      }
+    }
+  }
+}
+
+.contentContainer {
+  padding: 5px 20px;
+  width: 100%;
+}
+
+/* Hide the scroll thumb */
+::-webkit-scrollbar {
+  display: none;
+}

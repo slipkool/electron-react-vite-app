@@ -1,0 +1,36 @@
+@import '../../assets/styles/variables.scss';
+@import '../../assets/styles/responsive.scss';
+
+.users {
+  .info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .btn {
+      background: $soft-color;
+      color: $dark-color;
+
+      &:hover {
+        background: $dark-bg;
+        color: $inputColor;
+      }
+    }
+
+    button {
+      padding: 5px;
+      cursor: pointer;
+    }
+  }
+
+  > .dataTable {
+    .MuiBox-root {
+      margin: 0;
+
+      .dataGrid.MuiDataGrid-root {
+        height: 600px;
+      }
+    }
+  }
+}

@@ -1,0 +1,70 @@
+@import '../../../assets/styles/variables.scss';
+@import '../../../assets/styles/responsive.scss';
+
+.activitySection {
+  flex-basis: 50%;
+
+  @include lg {
+    width: 100%;
+  }
+
+  .heading {
+    width: 100%;
+    justify-content: space-between;
+
+    h1 {
+      font-size: $h1FontSize;
+      color: $inputColor;
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+
+      &:hover {
+        border: 1px solid $dark-color;
+      }
+    }
+  }
+
+  .secContainer {
+    margin-top: 1rem;
+
+    .singleCustomer {
+      align-items: flex-start;
+      justify-content: space-between;
+
+      img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px $soft-color;
+        margin-right: 1rem;
+      }
+
+      .customerDetails {
+        flex: 1;
+
+        .name {
+          font-size: $h3FontSize;
+          font-weight: 600;
+          color: $soft-color;
+          display: block;
+        }
+
+        small {
+          font-weight: 500;
+          color: $soft-color;
+          font-size: $smallFontSize;
+        }
+      }
+
+      .duration {
+        color: $soft-color;
+        font-weight: 500;
+        font-size: $smallestFontSize;
+      }
+    }
+  }
+}
