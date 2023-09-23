@@ -10,11 +10,32 @@ export const orderSlice = createSlice({
   initialState,
   reducers: {
     updateOrder: (state, action: PayloadAction<UpdateOrderDto>) => {
+      const clientId = action.payload.clientId ?? 0
+      const client = optionsClients.find((client) => {
+        return client.id === +clientId
+      })
+
+      const productsIds = action.payload.productsIds ?? []
+      const products = optionsProducts.filter((product) => productsIds.includes(product.id))
+
+      if (!client) {
+        throw new Error('Error al crear la orden')
+      }
       const index = state.findIndex((order) => order.id === action.payload.id)
       const prevData = state[index]
       state[index] = {
         ...prevData,
-        ...action.payload
+        client: {
+          id: client.id,
+          name: client.name
+        },
+        updateAt: new Date(),
+        images: [],
+        paid: action.payload.paid ?? false,
+        partialPayment: action.payload.partialPayment ?? 0,
+        patient: action.payload.patient ?? '',
+        total: action.payload.total ?? 0,
+        products: products
       }
     },
     createOrder: (state, action: PayloadAction<CreateOrderDto>) => {
@@ -31,13 +52,13 @@ export const orderSlice = createSlice({
       }
 
       const newOrder: Order = {
-        ...action.payload,
         id: Math.floor(Math.random() * 1000) + 1,
         client: {
           id: client.id,
           name: client.name
         },
         createdAt: new Date(),
+        updateAt: new Date(),
         images: [],
         paid: action.payload.paid,
         partialPayment: action.payload.partialPayment,
