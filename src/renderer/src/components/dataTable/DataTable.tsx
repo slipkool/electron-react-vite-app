@@ -2,12 +2,12 @@ import { DataGrid, GridColDef, GridFooter, GridToolbar } from '@mui/x-data-grid'
 import { Box, useTheme } from '@mui/material'
 import React from 'react'
 /* import { Link } from 'react-router-dom' */
+import { DatagridProps } from '@renderer/app/props/props'
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import imgView from '../../assets/images/view.svg'
 import CustomFooterTotalComponent from './CustomFooterTotalComponent'
 import imgDelete from '../../assets/images/delete.svg'
 
-import { DatagridProps } from '@renderer/types/types'
 import { tokens } from '../../theme'
 import './dataTable.scss'
 
@@ -84,6 +84,10 @@ const DataTable = (props: DatagridProps): React.JSX.Element => {
           },
           '& .MuiCheckbox-root': {
             color: `${colors.greenAccent[200]} !important`
+          },
+          '& .hot': {
+            backgroundColor: '#ff090975',
+            color: '#ffffff'
           },
           overflowX: 'scroll'
         }}

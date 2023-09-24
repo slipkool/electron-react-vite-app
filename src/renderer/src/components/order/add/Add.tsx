@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { GridColDef } from '@mui/x-data-grid'
-import DataTable from '../../dataTable/DataTable'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useAppDispatch } from '@renderer/app/hooks/hooks'
+import DataTable from '@renderer/components/dataTable/DataTable'
+import { createOrder, updateOrder } from '@renderer/app/store/features/orders/orderSlice'
+import { useAppDispatch } from '@renderer/app/store/store'
 
 import { AddProps } from '@renderer/app/props/props'
 import { Product } from '@renderer/app/models/product.model'
@@ -12,18 +13,23 @@ import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
 import { optionsClients, optionsProducts } from '@renderer/data'
 
 import './add.scss'
-import { createOrder, updateOrder } from '@renderer/features/orders/orderSlice'
 
 type AddFormValues = {
-  client: number
+  client: string
   patient: string
   paid: boolean
+  partialPayment: number
 }
 
 const schema = yup.object({
-  client: yup.number().required('Por favor seleccione un cliente'),
+  client: yup.string().required('Por favor seleccione un cliente'),
   patient: yup.string().required('El paciente es requerido'),
-  paid: yup.bool().required('El pago es requerido')
+  paid: yup.bool().required('El pago es requerido'),
+  partialPayment: yup
+    .number()
+    .typeError('El valor debe ser un numero')
+    .required('Ingrese un valor')
+    .min(0, 'El valor debe ser mayor a cero')
 })
 
 const columns: GridColDef[] = [
@@ -53,7 +59,10 @@ const Add = (props: AddProps): React.JSX.Element => {
     setValue,
     formState: { errors }
   } = useForm<AddFormValues>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
+    defaultValues: {
+      partialPayment: 0
+    }
   })
 
   const [productSelected, setProductSelected] = useState('')
@@ -66,9 +75,10 @@ const Add = (props: AddProps): React.JSX.Element => {
 
   useEffect(() => {
     if (isAddMode) return
-    setValue('client', order?.client.id)
+    setValue('client', order.client.id.toString())
     setValue('patient', order?.patient)
     setValue('paid', order?.paid)
+    setValue('partialPayment', order?.partialPayment)
     setProductListSelected(order?.products)
   }, [])
 
@@ -79,7 +89,7 @@ const Add = (props: AddProps): React.JSX.Element => {
 
   const onChange = (event): void => {
     const test = optionsProducts.find((test) => {
-      return test.id === +event.target.value //+ convert to number
+      return test.id === +event.target.value
     })
 
     if (test === undefined) {
@@ -93,8 +103,7 @@ const Add = (props: AddProps): React.JSX.Element => {
   const onSubmit = (data: AddFormValues, event): void => {
     event.preventDefault()
 
-    if (productListSelected.length === 0) {
-      setCustomErrors('Debe seleccional al menos una prueba a realizar')
+    if (!isValidOrder(data)) {
       return
     }
 
@@ -104,14 +113,27 @@ const Add = (props: AddProps): React.JSX.Element => {
     props.saveEvent()
   }
 
+  const isValidOrder = (data: AddFormValues): boolean => {
+    if (productListSelected.length === 0) {
+      setCustomErrors('Debe seleccional al menos una prueba a realizar')
+      return false
+    }
+
+    if (data.partialPayment > total) {
+      setCustomErrors('El valor del abono no puede ser mayor al valor total de las pruebas')
+      return false
+    }
+    return true
+  }
+
   const create = (data: AddFormValues): void => {
     const createOrderDto: CreateOrderDto = {
       patient: data.patient,
-      clientId: data.client,
+      clientId: +data.client,
       productsIds: productListSelected.map((product) => product.id),
       paid: data.paid,
       total: total,
-      partialPayment: 0,
+      partialPayment: data.partialPayment,
       images: [],
       createdAt: new Date(),
       updateAt: new Date()
@@ -123,11 +145,11 @@ const Add = (props: AddProps): React.JSX.Element => {
     const updateOrderDto: UpdateOrderDto = {
       id,
       patient: data.patient,
-      clientId: data.client,
+      clientId: +data.client,
       productsIds: productListSelected.map((product) => product.id),
       paid: data.paid,
       total: total,
-      partialPayment: 0,
+      partialPayment: data.partialPayment,
       images: [],
       updateAt: new Date()
     }
@@ -175,6 +197,17 @@ const Add = (props: AddProps): React.JSX.Element => {
             {errors.patient && <span className="error-message">{errors.patient.message}</span>}
           </div>
           <div className="item">
+            <label>Abono</label>
+            <input type="number" placeholder="Abono" {...register('partialPayment')} />
+            {errors.partialPayment && (
+              <span className="error-message">{errors.partialPayment.message}</span>
+            )}
+          </div>
+          <div className="item">
+            <label>Pagado</label>
+            <input type="checkbox" {...register('paid')} />
+          </div>
+          <div className="item">
             <label>Listado de pruebas</label>
             <select onChange={onChange} value={productSelected}>
               <option value="">--Seleccione--</option>
@@ -184,10 +217,6 @@ const Add = (props: AddProps): React.JSX.Element => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="item">
-            <label>Pagado</label>
-            <input type="checkbox" {...register('paid')} />
           </div>
           <div className="item-grid">
             <label>Pruebas a realizar</label>

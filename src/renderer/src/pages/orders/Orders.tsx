@@ -1,17 +1,30 @@
 import React, { useState } from 'react'
-import { GridColDef } from '@mui/x-data-grid'
+import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import moment from 'moment'
-import { useAppSelector, useAppDispatch } from '../../app/hooks/hooks'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import Add from '@renderer/components/order/add/Add'
 import { Order } from '@renderer/app/models/order.model'
+import { removeOrder } from '@renderer/app/store/features/orders/orderSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
 
 import noavatar from '../../assets/images/noavatar.png'
 import './orders.scss'
-import { removeOrder } from '@renderer/features/orders/orderSlice'
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+})
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', minWidth: 50, maxWidth: 100, flex: 1 },
+  {
+    field: 'id',
+    headerName: 'ID',
+    minWidth: 50,
+    maxWidth: 100,
+    flex: 1,
+    headerAlign: 'left',
+    align: 'left'
+  },
   {
     field: 'img',
     headerName: 'Avatar',
@@ -19,7 +32,9 @@ const columns: GridColDef[] = [
     disableExport: true,
     renderCell: (params): React.JSX.Element => {
       return <img src={params.row.img || noavatar} alt="" />
-    }
+    },
+    headerAlign: 'center',
+    align: 'center'
   },
   {
     field: 'client',
@@ -27,27 +42,66 @@ const columns: GridColDef[] = [
     headerName: 'Cliente',
     minWidth: 100,
     flex: 1,
-    valueGetter: (params) => params.row?.client?.name
+    valueGetter: (params) => params.row?.client?.name,
+    headerAlign: 'left',
+    align: 'left'
   },
   {
     field: 'total',
-    type: 'string',
+    type: 'number',
     headerName: 'Total',
     flex: 1,
-    valueFormatter: ({ value }) => new Intl.NumberFormat().format(value)
+    valueFormatter: ({ value }) => currencyFormatter.format(value),
+    cellClassName: 'font-tabular-nums',
+    headerAlign: 'left',
+    align: 'left'
+  },
+  {
+    field: 'partialPayment',
+    type: 'number',
+    headerName: 'Abono',
+    flex: 1,
+    valueFormatter: ({ value }) => currencyFormatter.format(value),
+    cellClassName: 'font-tabular-nums',
+    headerAlign: 'left',
+    align: 'left'
+  },
+  {
+    field: 'Deuda',
+    headerName: 'Deuda',
+    description: 'Saldo a deber',
+    flex: 1,
+    valueGetter: ({ row }): string => {
+      return currencyFormatter.format(row.total - row.partialPayment)
+    },
+    cellClassName: (params: GridCellParams<any, number>): string => {
+      if (params.value == null) {
+        return ''
+      }
+
+      const temp = params.value.toString().replace(/[^0-9.-]+/g, '')
+
+      return parseFloat(temp) > 0 ? 'font-tabular-nums hot' : 'font-tabular-nums'
+    },
+    headerAlign: 'left',
+    align: 'left'
   },
   {
     field: 'createdAt',
     headerName: 'Fecha',
     flex: 1,
     type: 'dateTime',
-    valueFormatter: (params) => moment(params?.value).format('DD/MM/YYYY hh:mm A')
+    valueFormatter: (params) => moment(params?.value).format('DD/MM/YYYY hh:mm A'),
+    headerAlign: 'center',
+    align: 'center'
   },
   {
     field: 'paid',
     headerName: 'Pagado',
     flex: 1,
-    type: 'boolean'
+    type: 'boolean',
+    headerAlign: 'center',
+    align: 'center'
   }
 ]
 
