@@ -57,6 +57,7 @@ const Add = (props: AddProps): React.JSX.Element => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors }
   } = useForm<AddFormValues>({
     resolver: yupResolver(schema),
@@ -85,6 +86,8 @@ const Add = (props: AddProps): React.JSX.Element => {
   useEffect(() => {
     const total = productListSelected.map((item) => item.price).reduce((a, b) => a + b, 0)
     setTotal(total)
+    const partialPayment = getValues('partialPayment')
+    setValue('paid', +partialPayment === total)
   }, [productListSelected])
 
   const onChange = (event): void => {
@@ -98,6 +101,10 @@ const Add = (props: AddProps): React.JSX.Element => {
 
     setProductListSelected((prevArray) => [...prevArray, test])
     setProductSelected('')
+  }
+
+  const onChangePartialPayment = (event): void => {
+    setValue('paid', +event.target.value === total)
   }
 
   const onSubmit = (data: AddFormValues, event): void => {
@@ -198,14 +205,19 @@ const Add = (props: AddProps): React.JSX.Element => {
           </div>
           <div className="item">
             <label>Abono</label>
-            <input type="number" placeholder="Abono" {...register('partialPayment')} />
+            <input
+              type="number"
+              placeholder="Abono"
+              {...register('partialPayment')}
+              onChange={onChangePartialPayment}
+            />
             {errors.partialPayment && (
               <span className="error-message">{errors.partialPayment.message}</span>
             )}
           </div>
           <div className="item">
             <label>Pagado</label>
-            <input type="checkbox" {...register('paid')} />
+            <input type="checkbox" {...register('paid')} disabled />
           </div>
           <div className="item">
             <label>Listado de pruebas</label>
