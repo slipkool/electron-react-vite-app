@@ -5,12 +5,12 @@ import { ColorModeContext, useMode } from './theme'
 import Home from './pages/home/Home'
 import Users from './pages/users/Users'
 import Products from './pages/products/Products'
-import User from './pages/user/User'
 import DefaultLayout from './Layout/DefaultLayout'
 import Login from './pages/login/Login'
+import OrderList from './pages/order/order-list/OrderList'
+import OrderForm from './pages/order/order-form/OrderForm'
 
 import './assets/styles/index.scss'
-import Orders from './pages/orders/Orders'
 
 const App = (): React.JSX.Element => {
   const [theme, colorMode] = useMode()
@@ -34,11 +34,15 @@ const App = (): React.JSX.Element => {
         },
         {
           path: '/orders',
-          element: <Orders />
+          element: <OrderList />
         },
         {
-          path: '/users/:id',
-          element: <User />
+          path: '/orders/add',
+          element: <OrderForm />
+        },
+        {
+          path: '/orders/:id',
+          element: <OrderForm />
         }
       ]
     },

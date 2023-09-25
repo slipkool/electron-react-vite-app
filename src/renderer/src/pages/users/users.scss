@@ -7,20 +7,5 @@
     align-items: center;
     gap: 20px;
     margin-bottom: 20px;
-
-    .btn {
-      background: $soft-color;
-      color: $dark-color;
-
-      &:hover {
-        background: $dark-bg;
-        color: $inputColor;
-      }
-    }
-
-    button {
-      padding: 5px;
-      cursor: pointer;
-    }
   }
 }

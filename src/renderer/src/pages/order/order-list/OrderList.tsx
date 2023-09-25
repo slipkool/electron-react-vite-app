@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import moment from 'moment'
 import DataTable from '@renderer/components/dataTable/DataTable'
-import Add from '@renderer/components/order/add/Add'
+import OrderForm from '@renderer/pages/order/order-form/OrderForm'
 import { Order } from '@renderer/app/models/order.model'
 import { removeOrder } from '@renderer/app/store/features/orders/orderSlice'
 import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
 
-import noavatar from '../../assets/images/noavatar.png'
-import './orders.scss'
+import noavatar from '@renderer/assets/images/noavatar.png'
+import './orderList.scss'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -74,6 +75,7 @@ const columns: GridColDef[] = [
     valueGetter: ({ row }): string => {
       return currencyFormatter.format(row.total - row.partialPayment)
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cellClassName: (params: GridCellParams<any, number>): string => {
       if (params.value == null) {
         return ''
@@ -105,29 +107,30 @@ const columns: GridColDef[] = [
   }
 ]
 
-const Orders = (): React.JSX.Element => {
+const OrderList = (): React.JSX.Element => {
   const dispatchApp = useAppDispatch()
+  const navigate = useNavigate()
   const [orderSelected, setOrderSelected] = useState<Order>()
   const [open, setOpen] = useState(false)
   const orderList = useAppSelector((state) => state.orders)
 
-  const onSaveEvent = (): void => {
-    //setOrderList(orderService.getAll())
-  }
+  const onSaveEvent = (): void => {}
 
   const onDelete = (id: number): void => {
     dispatchApp(removeOrder(id))
   }
 
-  const onView = (data: number): void => {
-    const order = orderList.find((item) => item.id === data)
+  const onView = (id: number): void => {
+    /* const order = orderList.find((item) => item.id === data)
     setOrderSelected(order)
-    setOpen(true)
+    setOpen(true) */
+    navigate(`/orders/${id}`)
   }
 
   const onOpenAdd = (): void => {
-    setOrderSelected(undefined)
-    setOpen(true)
+    navigate('/orders/add')
+    /* setOrderSelected(undefined)
+    setOpen(true) */
   }
 
   return (
@@ -150,7 +153,7 @@ const Orders = (): React.JSX.Element => {
       />
 
       {open && (
-        <Add
+        <OrderForm
           slug="orden"
           columns={columns}
           setOpen={setOpen}
@@ -162,4 +165,4 @@ const Orders = (): React.JSX.Element => {
   )
 }
 
-export default Orders
+export default OrderList

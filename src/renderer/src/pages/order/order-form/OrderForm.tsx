@@ -3,16 +3,19 @@ import { GridColDef } from '@mui/x-data-grid'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { useNavigate, useParams } from 'react-router-dom'
 import DataTable from '@renderer/components/dataTable/DataTable'
-import { createOrder, updateOrder } from '@renderer/app/store/features/orders/orderSlice'
-import { useAppDispatch } from '@renderer/app/store/store'
-
-import { AddProps } from '@renderer/app/props/props'
+import {
+  createOrder,
+  findOrderById,
+  updateOrder
+} from '@renderer/app/store/features/orders/orderSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
 import { Product } from '@renderer/app/models/product.model'
 import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
 import { optionsClients, optionsProducts } from '@renderer/data'
 
-import './add.scss'
+import './orderForm.scss'
 
 type AddFormValues = {
   client: string
@@ -51,8 +54,9 @@ const columns: GridColDef[] = [
   }
 ]
 
-const Add = (props: AddProps): React.JSX.Element => {
+const OrderForm = (): React.JSX.Element => {
   const dispatchApp = useAppDispatch()
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -70,7 +74,8 @@ const Add = (props: AddProps): React.JSX.Element => {
   const [total, setTotal] = useState(0)
   const [customErrors, setCustomErrors] = useState<string | null>('')
   const [productListSelected, setProductListSelected] = useState<Product[]>([])
-  const { order } = props
+  const { id } = useParams() ?? 0
+  const order = useAppSelector((state) => findOrderById(state, Number(id)))
 
   const isAddMode = !order
 
@@ -116,8 +121,7 @@ const Add = (props: AddProps): React.JSX.Element => {
 
     isAddMode ? create(data) : update(order.id, data)
 
-    props.setOpen(false)
-    props.saveEvent()
+    navigate('/orders')
   }
 
   const isValidOrder = (data: AddFormValues): boolean => {
@@ -169,86 +173,81 @@ const Add = (props: AddProps): React.JSX.Element => {
   }
 
   return (
-    <div className="add">
-      <div className="modal">
-        <span className="close" onClick={(): void => props.setOpen(false)}>
-          X
-        </span>
-        <h1>Nueva {props.slug}</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="item">
-            <label>Nombre del cliente</label>
-            <select {...register('client')}>
-              <option value="">--Seleccione--</option>
-              {optionsClients.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
-            {errors.client && <span className="error-message">{errors.client.message}</span>}
-          </div>
-          <div className="item">
-            <label>Nombre del paciente</label>
-            <input
-              type="text"
-              placeholder="Nombre del paciente"
-              {...register('patient', {
-                required: { value: true, message: 'Nombre del paciente es requerido' },
-                minLength: {
-                  value: 2,
-                  message: 'Nombre debe tener al menos 2 caracteres'
-                }
-              })}
-            />
-            {errors.patient && <span className="error-message">{errors.patient.message}</span>}
-          </div>
-          <div className="item">
-            <label>Abono</label>
-            <input
-              type="number"
-              placeholder="Abono"
-              {...register('partialPayment')}
-              onChange={onChangePartialPayment}
-            />
-            {errors.partialPayment && (
-              <span className="error-message">{errors.partialPayment.message}</span>
-            )}
-          </div>
-          <div className="item">
-            <label>Pagado</label>
-            <input type="checkbox" {...register('paid')} disabled />
-          </div>
-          <div className="item">
-            <label>Listado de pruebas</label>
-            <select onChange={onChange} value={productSelected}>
-              <option value="">--Seleccione--</option>
-              {optionsProducts.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.description}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="item-grid">
-            <label>Pruebas a realizar</label>
-            <DataTable
-              slug="users"
-              columns={columns}
-              rows={productListSelected}
-              disableToolbar={true}
-              disableViewAction={true}
-              disableFooterTotalBar={false}
-              total={total}
-              deleteEvent={onDelete}
-            />
-            {customErrors && <span className="error-message">{customErrors}</span>}
-          </div>
-          <button className="btn">Guardar</button>
-        </form>
-      </div>
+    <div className="order">
+      <h1>Nueva Orden</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="item">
+          <label>Nombre del cliente</label>
+          <select {...register('client')}>
+            <option value="">--Seleccione--</option>
+            {optionsClients.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          {errors.client && <span className="error-message">{errors.client.message}</span>}
+        </div>
+        <div className="item">
+          <label>Nombre del paciente</label>
+          <input
+            type="text"
+            placeholder="Nombre del paciente"
+            {...register('patient', {
+              required: { value: true, message: 'Nombre del paciente es requerido' },
+              minLength: {
+                value: 2,
+                message: 'Nombre debe tener al menos 2 caracteres'
+              }
+            })}
+          />
+          {errors.patient && <span className="error-message">{errors.patient.message}</span>}
+        </div>
+        <div className="item">
+          <label>Abono</label>
+          <input
+            type="number"
+            placeholder="Abono"
+            {...register('partialPayment')}
+            onChange={onChangePartialPayment}
+          />
+          {errors.partialPayment && (
+            <span className="error-message">{errors.partialPayment.message}</span>
+          )}
+        </div>
+        <div className="item">
+          <label>Listado de pruebas</label>
+          <select onChange={onChange} value={productSelected}>
+            <option value="">--Seleccione--</option>
+            {optionsProducts.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.description}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="item">
+          <label>Pagado</label>
+          <input type="checkbox" {...register('paid')} disabled />
+        </div>
+        <div className="item-grid">
+          <label>Pruebas a realizar</label>
+          <DataTable
+            slug="users"
+            columns={columns}
+            rows={productListSelected}
+            disableToolbar={true}
+            disableViewAction={true}
+            disableFooterTotalBar={false}
+            total={total}
+            deleteEvent={onDelete}
+          />
+          {customErrors && <span className="error-message">{customErrors}</span>}
+        </div>
+        <button className="btn">Guardar</button>
+      </form>
     </div>
   )
 }
 
-export default Add
+export default OrderForm

@@ -1,7 +1,8 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit'
 import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
 import { Order } from '@renderer/app/models/order.model'
 import { optionsClients, optionsProducts } from '@renderer/data'
+import { RootState } from '../../store'
 
 const initialState: Order[] = []
 
@@ -80,3 +81,12 @@ export const orderSlice = createSlice({
 export const { updateOrder, createOrder, removeOrder } = orderSlice.actions
 
 export default orderSlice.reducer
+
+const orders = (state: RootState): Order[] => state.orders
+
+export const findOrderById = createSelector(
+  [orders, (orders, id: number): number => id],
+  (orders, id): Order | undefined => {
+    return orders.find((order) => order.id === id)
+  }
+)
