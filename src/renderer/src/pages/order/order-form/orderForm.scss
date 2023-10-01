@@ -5,11 +5,11 @@
   position: relative;
   width: 95%;
 
-  h1 {
+  > h1 {
     margin-bottom: 40px;
   }
 
-  form {
+  > form {
     display: flex;
     flex-wrap: wrap;
     align-content: space-between;
@@ -85,6 +85,17 @@
       input[type='checkbox']:focus {
         outline: max(2px, 0.15em) solid currentColor;
         outline-offset: max(2px, 0.15em);
+      }
+
+      .transparent {
+        background: none;
+        border: 2px solid $soft-color;
+        color: $soft-color;
+
+        &:hover {
+          background: $main-color;
+          color: $textColor;
+        }
       }
     }
 

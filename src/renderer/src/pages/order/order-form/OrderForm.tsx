@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useNavigate, useParams } from 'react-router-dom'
 import DataTable from '@renderer/components/dataTable/DataTable'
+import Dropzone from '@renderer/components/dropzone/Dropzone'
 import {
   createOrder,
   findOrderById,
@@ -55,6 +56,7 @@ const columns: GridColDef[] = [
 ]
 
 const OrderForm = (): React.JSX.Element => {
+  const [openModalImage, setOpenModalImage] = useState(false)
   const dispatchApp = useAppDispatch()
   const navigate = useNavigate()
   const {
@@ -230,6 +232,16 @@ const OrderForm = (): React.JSX.Element => {
           <label>Pagado</label>
           <input type="checkbox" {...register('paid')} disabled />
         </div>
+        <div className="item">
+          <label>Imagenes</label>
+          <button
+            className="btn flex transparent"
+            type="button"
+            onClick={(): void => setOpenModalImage(true)}
+          >
+            Agregar Imagenes
+          </button>
+        </div>
         <div className="item-grid">
           <label>Pruebas a realizar</label>
           <DataTable
@@ -246,6 +258,7 @@ const OrderForm = (): React.JSX.Element => {
         </div>
         <button className="btn">Guardar</button>
       </form>
+      {openModalImage && <Dropzone setOpen={setOpenModalImage} />}
     </div>
   )
 }

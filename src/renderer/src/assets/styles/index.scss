@@ -14,13 +14,18 @@ a {
 
 .flex {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .grid {
   display: grid;
   align-items: center;
   gap: 1.5rem;
+}
+
+button,
+[role='button'] {
+  cursor: pointer;
 }
 
 .btn {
