@@ -90,3 +90,7 @@ export const findOrderById = createSelector(
     return orders.find((order) => order.id === id)
   }
 )
+
+export const findLastOrder = createSelector([orders], (orders): Order | undefined => {
+  return orders[orders.length - 1]
+})

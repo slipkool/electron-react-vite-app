@@ -9,6 +9,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "composite": true,
+    "allowJs": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {

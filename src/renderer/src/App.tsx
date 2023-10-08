@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { ColorModeContext, useMode } from './theme'
 import Home from './pages/home/Home'
-import Users from './pages/users/Users'
+import Clients from './pages/users/Clients'
 import Products from './pages/products/Products'
 import DefaultLayout from './Layout/DefaultLayout'
 import Login from './pages/login/Login'
@@ -25,8 +25,8 @@ const App = (): React.JSX.Element => {
           element: <Home />
         },
         {
-          path: '/users',
-          element: <Users />
+          path: '/clients',
+          element: <Clients />
         },
         {
           path: '/products',

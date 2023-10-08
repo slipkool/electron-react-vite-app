@@ -8,6 +8,7 @@ import DataTable from '@renderer/components/dataTable/DataTable'
 import Dropzone from '@renderer/components/dropzone/Dropzone'
 import {
   createOrder,
+  findLastOrder,
   findOrderById,
   updateOrder
 } from '@renderer/app/store/features/orders/orderSlice'
@@ -57,6 +58,7 @@ const columns: GridColDef[] = [
 
 const OrderForm = (): React.JSX.Element => {
   const [openModalImage, setOpenModalImage] = useState(false)
+  const [formData, setFormData] = useState<FormData>()
   const dispatchApp = useAppDispatch()
   const navigate = useNavigate()
   const {
@@ -78,6 +80,7 @@ const OrderForm = (): React.JSX.Element => {
   const [productListSelected, setProductListSelected] = useState<Product[]>([])
   const { id } = useParams() ?? 0
   const order = useAppSelector((state) => findOrderById(state, Number(id)))
+  const orderList = useAppSelector((state) => state.orders)
 
   const isAddMode = !order
 
@@ -96,6 +99,10 @@ const OrderForm = (): React.JSX.Element => {
     const partialPayment = getValues('partialPayment')
     setValue('paid', +partialPayment === total)
   }, [productListSelected])
+
+  useEffect(() => {
+    console.log(orderList)
+  }, [orderList])
 
   const onChange = (event): void => {
     const test = optionsProducts.find((test) => {
@@ -123,7 +130,7 @@ const OrderForm = (): React.JSX.Element => {
 
     isAddMode ? create(data) : update(order.id, data)
 
-    navigate('/orders')
+    //navigate('/orders')
   }
 
   const isValidOrder = (data: AddFormValues): boolean => {
@@ -152,6 +159,9 @@ const OrderForm = (): React.JSX.Element => {
       updateAt: new Date()
     }
     dispatchApp(createOrder(createOrderDto))
+
+    //formData?.append('clientId', createOrderDto.clientId)
+    //formData?.append('orderId', createOrderDto.clientId)
   }
 
   const update = (id: number, data: AddFormValues): void => {
@@ -258,7 +268,7 @@ const OrderForm = (): React.JSX.Element => {
         </div>
         <button className="btn">Guardar</button>
       </form>
-      {openModalImage && <Dropzone setOpen={setOpenModalImage} />}
+      {openModalImage && <Dropzone setOpen={setOpenModalImage} setFormData={setFormData} />}
     </div>
   )
 }

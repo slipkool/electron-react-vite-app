@@ -3,7 +3,7 @@ import { GridColDef } from '@mui/x-data-grid'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import Add from '@renderer/components/user/add/Add'
 
-import './users.scss'
+import './clients.scss'
 import noavatar from '../../assets/images/noavatar.png'
 import { userRows } from '../../data'
 
@@ -57,7 +57,7 @@ const columns: GridColDef[] = [
   }
 ]
 
-const Users = (): React.JSX.Element => {
+const Clients = (): React.JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const onAdd = (): void => {}
@@ -84,4 +84,4 @@ const Users = (): React.JSX.Element => {
   )
 }
 
-export default Users
+export default Clients

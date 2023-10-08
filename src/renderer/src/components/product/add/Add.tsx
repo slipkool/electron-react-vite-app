@@ -1,102 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import { GridColDef } from '@mui/x-data-grid'
-import DataTable from '../../dataTable/DataTable'
+import React from 'react'
 import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
-import './add.scss'
-import { Product } from '@renderer/app/models/product.model'
 import { AddProps } from '@renderer/app/props/props'
+import { CreateProductDto } from '@renderer/app/dtos/product.dto'
+import { addProduct } from '@renderer/app/services/product.service'
+import './add.scss'
 
 type AddFormValues = {
-  client: number
-  patient: string
-  paid: boolean
+  price: number
+  name: string
 }
 
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', minWidth: 50, maxWidth: 100, flex: 1 },
-  {
-    field: 'description',
-    type: 'string',
-    headerName: 'Prueba',
-    minWidth: 400,
-    flex: 1
-  },
-  {
-    field: 'price',
-    type: 'string',
-    headerName: 'Valor',
-    minWidth: 100,
-    flex: 1
-  }
-]
+const schema = yup.object({
+  name: yup.string().required('El nombre es requerido'),
+  price: yup
+    .number()
+    .typeError('El valor debe ser un numero')
+    .required('Ingrese un valor')
+    .min(0, 'El valor debe ser mayor a cero')
+})
 
 const Add = (props: AddProps): React.JSX.Element => {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<AddFormValues>()
-
-  const [selectedTest, setSelectedTest] = useState('')
-  const [total, setTotal] = useState(0)
-  const [customErrors, setCustomErrors] = useState<string | null>('')
-  const [selectedTestList, setSelectedTestList] = useState<Product[]>([])
-  const options: Product[] = [
-    {
-      id: 0,
-      description: '--Seleccione--',
+  } = useForm<AddFormValues>({
+    resolver: yupResolver(schema),
+    defaultValues: {
       price: 0
-    },
-    {
-      id: 1,
-      description: 'Test 1',
-      price: 100000
-    },
-    {
-      id: 2,
-      description: 'Test 2',
-      price: 200000
-    },
-    {
-      id: 3,
-      description: 'Test 3',
-      price: 300000
-    },
-    {
-      id: 4,
-      description: 'Test 4',
-      price: 400000
     }
-  ]
+  })
 
-  useEffect(() => {
-    const total = selectedTestList.map((item) => item.price).reduce((a, b) => a + b, 0)
-    setTotal(total)
-  }, [selectedTestList])
-
-  const handleChange = (event): void => {
-    const test = options.find((test) => {
-      return test.id === parseInt(event.target.value, 10)
-    })
-
-    if (test === undefined) {
-      return
-    }
-
-    setSelectedTestList((prevArray) => [...prevArray, test])
-    setSelectedTest('')
-  }
-
-  const onSubmit = (data: AddFormValues, event): void => {
+  const onSubmit = async (data: AddFormValues, event): Promise<void> => {
     event.preventDefault()
 
-    props.setOpen(false)
-  }
+    const newProduct: CreateProductDto = {
+      name: data.name,
+      price: data.price
+    }
+    const response = await addProduct(newProduct)
+    console.log(response)
 
-  const onDelete = (data: number): void => {
-    const newItems = selectedTestList.filter((item) => item.id !== data)
-    setSelectedTestList(newItems)
+    if (props.saveEvent) props.saveEvent()
+
+    props.setOpen(false)
   }
 
   return (
@@ -105,65 +55,33 @@ const Add = (props: AddProps): React.JSX.Element => {
         <span className="close" onClick={(): void => props.setOpen(false)}>
           X
         </span>
-        <h1>Add new {props.slug}</h1>
+        <h1>Nuevo Producto</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="item">
-            <label>Nombre del cliente</label>
+            <label>Nombre del producto</label>
             <input
               type="text"
-              placeholder="Nombre del cliente"
-              {...register('client', {
-                required: { value: true, message: 'Nombre del cliente es requerido' },
+              placeholder="Nombre del producto"
+              {...register('name', {
+                required: { value: true, message: 'Nombre del producto es requerido' },
                 minLength: {
                   value: 2,
                   message: 'Nombre debe tener al menos 2 caracteres'
                 }
               })}
             />
-            {errors.client && <span className="error-message">{errors.client.message}</span>}
+            {errors.name && <span className="error-message">{errors.name.message}</span>}
           </div>
           <div className="item">
-            <label>Nombre del paciente</label>
+            <label>Precio</label>
             <input
-              type="text"
-              placeholder="Nombre del paciente"
-              {...register('patient', {
-                required: { value: true, message: 'Nombre del paciente es requerido' },
-                minLength: {
-                  value: 2,
-                  message: 'Nombre debe tener al menos 2 caracteres'
-                }
+              type="number"
+              placeholder="Precio"
+              {...register('price', {
+                required: { value: true, message: 'Precio es requerido' }
               })}
             />
-            {errors.patient && <span className="error-message">{errors.patient.message}</span>}
-          </div>
-          <div className="item">
-            <label>Listado de pruebas</label>
-            <select onChange={handleChange} value={selectedTest}>
-              {options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.description}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="item">
-            <label>Pagado</label>
-            <input type="checkbox" {...register('paid')} />
-          </div>
-          <div className="item-grid">
-            <label>Pruebas a realizar</label>
-            <DataTable
-              slug="users"
-              columns={columns}
-              rows={selectedTestList}
-              disableToolbar={true}
-              disableViewAction={true}
-              disableFooterTotalBar={false}
-              total={total}
-              deleteEvent={onDelete}
-            />
-            {customErrors && <span className="error-message">{customErrors}</span>}
+            {errors.price && <span className="error-message">{errors.price.message}</span>}
           </div>
           <button className="btn">Send</button>
         </form>

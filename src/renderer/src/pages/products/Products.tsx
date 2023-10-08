@@ -1,66 +1,69 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GridColDef } from '@mui/x-data-grid'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import Add from '@renderer/components/product/add/Add'
 
+//import useFetchAndLoad from '@renderer/app/hooks/useFetchAndLoad'
+import { deleteProduct, fetchProducts } from '@renderer/app/services/product.service'
+//import { useAsync } from '@renderer/app/hooks/asyncComponentClean.hook'
 import './products.scss'
-import noavatar from '../../assets/images/noavatar.png'
-import { userRows } from '../../data'
+//import { productDtoToProductModelList } from '@renderer/app/dtos/product.dto'
+import { Product } from '@renderer/app/models/product.model'
+import { productDtoToProductModelList } from '@renderer/app/dtos/product.dto'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', minWidth: 50, maxWidth: 100, flex: 1 },
   {
-    field: 'img',
-    headerName: 'Avatar',
-    flex: 1,
-    renderCell: (params): React.JSX.Element => {
-      return <img src={params.row.img || noavatar} alt="" />
-    }
-  },
-  {
-    field: 'firstName',
+    field: 'name',
     type: 'string',
-    headerName: 'First name',
+    headerName: 'Nombre',
     minWidth: 100,
     flex: 1
   },
   {
-    field: 'lastName',
+    field: 'price',
     type: 'string',
-    headerName: 'Last name',
+    headerName: 'Precio',
     minWidth: 100,
-    flex: 1
-  },
-  {
-    field: 'email',
-    type: 'string',
-    headerName: 'Email',
-    flex: 1
-  },
-  {
-    field: 'phone',
-    type: 'string',
-    headerName: 'Phone',
-    flex: 1
-  },
-  {
-    field: 'createdAt',
-    headerName: 'Created At',
     flex: 1,
-    type: 'string'
-  },
-  {
-    field: 'verified',
-    headerName: 'Verified',
-    flex: 1,
-    type: 'boolean'
+    valueFormatter: ({ value }) => new Intl.NumberFormat().format(value)
   }
 ]
 
 const Products = (): React.JSX.Element => {
   const [open, setOpen] = useState(false)
+  //const { loading, callEndpoint } = useFetchAndLoad()
+  const [products, setProducts] = useState<Product[]>([])
+  /* const getApiData = async () => await callEndpoint(fetchProducts())
 
-  const onAdd = (): void => {}
+  const adaptResponse = (data: any): void => {
+    setProducts(productDtoToProductModelList(data))
+  }
+
+  useAsync(getApiData, adaptResponse, () => {}, []) */
+
+  const getData = async (): Promise<void> => {
+    try {
+      const response = await fetchProducts()
+      setProducts(productDtoToProductModelList(response))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
+
+  const onSave = (): void => {
+    getData()
+  }
+
+  const onDelete = async (data: number): Promise<void> => {
+    const result = await deleteProduct(data)
+    console.log(result)
+    getData()
+  }
 
   return (
     <div className="users">
@@ -70,16 +73,19 @@ const Products = (): React.JSX.Element => {
           Agregar producto
         </button>
       </div>
-      <DataTable
-        slug="users"
-        columns={columns}
-        rows={userRows}
-        disableToolbar={false}
-        disableViewAction={false}
-        disableFooterTotalBar={true}
-      />
+      <div>
+        <DataTable
+          slug="users"
+          columns={columns}
+          rows={products}
+          disableToolbar={false}
+          disableViewAction={false}
+          disableFooterTotalBar={true}
+          deleteEvent={onDelete}
+        />
+      </div>
 
-      {open && <Add slug="user" columns={columns} setOpen={setOpen} addEvent={onAdd} />}
+      {open && <Add setOpen={setOpen} saveEvent={onSave} />}
     </div>
   )
 }
