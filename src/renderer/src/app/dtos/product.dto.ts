@@ -8,6 +8,10 @@ export interface ProductDto {
 
 export interface CreateProductDto extends Omit<Product, 'id'> {}
 
+export interface UpdateProductDto extends Partial<CreateProductDto> {
+  id: number
+}
+
 export const productDtoToProductModel = (productDto: ProductDto): Product => {
   const product: Product = {
     id: productDto.id,

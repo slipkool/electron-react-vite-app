@@ -1,12 +1,11 @@
 import { GridColDef } from '@mui/x-data-grid'
-import { Order } from '../models/order.model'
 
-export type AddProps = {
+export type AddProps<T> = {
   slug?: string
   columns?: GridColDef[]
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   saveEvent: () => void
-  order?: Order
+  editObject?: T
 }
 
 export type DatagridProps = {

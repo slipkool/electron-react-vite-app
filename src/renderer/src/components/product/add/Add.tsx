@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 import { AddProps } from '@renderer/app/props/props'
-import { CreateProductDto } from '@renderer/app/dtos/product.dto'
-import { addProduct } from '@renderer/app/services/product.service'
+import { CreateProductDto, UpdateProductDto } from '@renderer/app/dtos/product.dto'
+import ProductService from '@renderer/app/services/product.service'
 import './add.scss'
+import { Product } from '@renderer/app/models/product.model'
+import { useAppDispatch } from '@renderer/app/store/store'
+import { addProduct, updateProduct } from '@renderer/app/store/features/products/productSlice'
 
 type AddFormValues = {
   price: number
@@ -22,9 +25,11 @@ const schema = yup.object({
     .min(0, 'El valor debe ser mayor a cero')
 })
 
-const Add = (props: AddProps): React.JSX.Element => {
+const Add = (props: AddProps<Product>): React.JSX.Element => {
+  const dispatchApp = useAppDispatch()
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors }
   } = useForm<AddFormValues>({
@@ -33,20 +38,45 @@ const Add = (props: AddProps): React.JSX.Element => {
       price: 0
     }
   })
+  const isAddMode = !props.editObject
+
+  useEffect(() => {
+    if (!props.editObject) return
+    setValue('price', props.editObject?.price)
+    setValue('name', props.editObject?.name)
+  }, [])
 
   const onSubmit = async (data: AddFormValues, event): Promise<void> => {
     event.preventDefault()
 
-    const newProduct: CreateProductDto = {
-      name: data.name,
-      price: data.price
-    }
-    const response = await addProduct(newProduct)
-    console.log(response)
+    isAddMode ? create(data) : update(props.editObject?.id, data)
 
     if (props.saveEvent) props.saveEvent()
 
     props.setOpen(false)
+  }
+
+  const create = async (data: AddFormValues): Promise<void> => {
+    const newProduct: CreateProductDto = {
+      name: data.name,
+      price: data.price
+    }
+    //const response = await ProductService.addProduct(newProduct)
+    //console.log(response)
+    dispatchApp(addProduct(newProduct))
+  }
+
+  const update = async (id: number | undefined, data: AddFormValues): Promise<void> => {
+    if (id) {
+      const product: UpdateProductDto = {
+        id,
+        name: data.name,
+        price: data.price
+      }
+      //const response = await ProductService.updateProduct(id, product)
+      //console.log(response)
+      dispatchApp(updateProduct(product))
+    }
   }
 
   return (

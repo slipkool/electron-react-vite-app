@@ -3,13 +3,10 @@ import { GridColDef } from '@mui/x-data-grid'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import Add from '@renderer/components/product/add/Add'
 
-//import useFetchAndLoad from '@renderer/app/hooks/useFetchAndLoad'
-import { deleteProduct, fetchProducts } from '@renderer/app/services/product.service'
-//import { useAsync } from '@renderer/app/hooks/asyncComponentClean.hook'
-import './products.scss'
-//import { productDtoToProductModelList } from '@renderer/app/dtos/product.dto'
 import { Product } from '@renderer/app/models/product.model'
-import { productDtoToProductModelList } from '@renderer/app/dtos/product.dto'
+import { deleteProduct, fetchProducts } from '@renderer/app/store/features/products/productSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
+import './products.scss'
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', minWidth: 50, maxWidth: 100, flex: 1 },
@@ -32,37 +29,35 @@ const columns: GridColDef[] = [
 
 const Products = (): React.JSX.Element => {
   const [open, setOpen] = useState(false)
-  //const { loading, callEndpoint } = useFetchAndLoad()
-  const [products, setProducts] = useState<Product[]>([])
-  /* const getApiData = async () => await callEndpoint(fetchProducts())
-
-  const adaptResponse = (data: any): void => {
-    setProducts(productDtoToProductModelList(data))
-  }
-
-  useAsync(getApiData, adaptResponse, () => {}, []) */
-
-  const getData = async (): Promise<void> => {
-    try {
-      const response = await fetchProducts()
-      setProducts(productDtoToProductModelList(response))
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const dispatchApp = useAppDispatch()
+  const { products, loading } = useAppSelector((state) => state.products)
+  const [product, setProduct] = useState<Product | null>()
 
   useEffect(() => {
-    getData()
+    dispatchApp(fetchProducts())
   }, [])
 
   const onSave = (): void => {
-    getData()
+    setProduct(null)
   }
 
-  const onDelete = async (data: number): Promise<void> => {
-    const result = await deleteProduct(data)
-    console.log(result)
-    getData()
+  const onDelete = (id: number): void => {
+    dispatchApp(deleteProduct(id))
+  }
+
+  const onView = (data: number): void => {
+    console.log(data)
+    const productSelected = products.find((product) => product.id === data)
+    if (productSelected) {
+      setProduct(productSelected)
+      setOpen(true)
+    } else {
+      throw new Error('Producto no existe')
+    }
+  }
+
+  if (loading) {
+    return <h2>Loading</h2>
   }
 
   return (
@@ -82,10 +77,11 @@ const Products = (): React.JSX.Element => {
           disableViewAction={false}
           disableFooterTotalBar={true}
           deleteEvent={onDelete}
+          viewEvent={onView}
         />
       </div>
 
-      {open && <Add setOpen={setOpen} saveEvent={onSave} />}
+      {open && <Add setOpen={setOpen} saveEvent={onSave} editObject={product} />}
     </div>
   )
 }
