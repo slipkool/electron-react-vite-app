@@ -2,7 +2,7 @@ import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit'
 import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
 import { Order } from '@renderer/app/models/order.model'
 import { optionsClients, optionsProducts } from '@renderer/data'
-import { RootState } from '../../store'
+import { RootState } from '../store'
 
 const initialState: Order[] = []
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import Single from '@renderer/components/user/single/Single'
+import Single from '@renderer/components/client/single/Single'
 
 import { singleUser } from '../../data'
 import './user.scss'

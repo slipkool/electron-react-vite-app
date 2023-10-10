@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import orderSlice from '@renderer/app/store/features/orders/orderSlice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import productSlice from '@renderer/app/store/features/products/productSlice'
+import { clientSlice, orderSlice, productSlice } from './states'
 
 export const store = configureStore({
   reducer: {
     orders: orderSlice,
-    products: productSlice
+    products: productSlice,
+    clients: clientSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,7 +1,7 @@
 @import '../../../assets/styles/variables.scss';
 @import '../../../assets/styles/responsive.scss';
 
-.users {
+.order {
   .info {
     display: flex;
     align-items: center;
@@ -14,7 +14,7 @@
       margin: 0;
 
       .dataGrid.MuiDataGrid-root {
-        height: 600px;
+        height: 700px;
       }
     }
   }

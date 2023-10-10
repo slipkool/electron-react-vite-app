@@ -5,8 +5,8 @@ import moment from 'moment'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import OrderForm from '@renderer/pages/order/order-form/OrderForm'
 import { Order } from '@renderer/app/models/order.model'
-import { removeOrder } from '@renderer/app/store/features/orders/orderSlice'
-import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
+import { removeOrder } from '@renderer/redux/states/orderSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
 
 import noavatar from '@renderer/assets/images/noavatar.png'
 import './orderList.scss'
@@ -134,7 +134,7 @@ const OrderList = (): React.JSX.Element => {
   }
 
   return (
-    <div className="users">
+    <div className="order">
       <div className="info">
         <h1>Ordenes</h1>
         <button className="btn flex" onClick={onOpenAdd}>

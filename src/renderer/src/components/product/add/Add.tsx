@@ -3,13 +3,12 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
-import { AddProps } from '@renderer/app/props/props'
+import { AddProps } from '@renderer/app/core/props'
 import { CreateProductDto, UpdateProductDto } from '@renderer/app/dtos/product.dto'
-import ProductService from '@renderer/app/services/product.service'
-import './add.scss'
 import { Product } from '@renderer/app/models/product.model'
-import { useAppDispatch } from '@renderer/app/store/store'
-import { addProduct, updateProduct } from '@renderer/app/store/features/products/productSlice'
+import { useAppDispatch } from '@renderer/redux/store'
+import { addProduct, updateProduct } from '@renderer/redux/states/productSlice'
+import './add.scss'
 
 type AddFormValues = {
   price: number
@@ -61,8 +60,7 @@ const Add = (props: AddProps<Product>): React.JSX.Element => {
       name: data.name,
       price: data.price
     }
-    //const response = await ProductService.addProduct(newProduct)
-    //console.log(response)
+
     dispatchApp(addProduct(newProduct))
   }
 
@@ -73,8 +71,7 @@ const Add = (props: AddProps<Product>): React.JSX.Element => {
         name: data.name,
         price: data.price
       }
-      //const response = await ProductService.updateProduct(id, product)
-      //console.log(response)
+
       dispatchApp(updateProduct(product))
     }
   }
@@ -85,7 +82,7 @@ const Add = (props: AddProps<Product>): React.JSX.Element => {
         <span className="close" onClick={(): void => props.setOpen(false)}>
           X
         </span>
-        <h1>Nuevo Producto</h1>
+        <h1>{isAddMode ? 'Nuevo' : 'Editar'} Producto</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="item">
             <label>Nombre del producto</label>

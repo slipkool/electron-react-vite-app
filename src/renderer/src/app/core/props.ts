@@ -5,7 +5,7 @@ export type AddProps<T> = {
   columns?: GridColDef[]
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   saveEvent: () => void
-  editObject?: T
+  editObject: T | undefined | null
 }
 
 export type DatagridProps = {

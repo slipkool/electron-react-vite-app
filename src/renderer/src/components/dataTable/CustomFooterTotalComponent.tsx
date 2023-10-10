@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import { DatagridFooterTotalProps } from '@renderer/app/props/props'
+import { DatagridFooterTotalProps } from '@renderer/app/core/props'
 import React from 'react'
 
 const CustomFooterTotalComponent = (props: DatagridFooterTotalProps): React.JSX.Element => {

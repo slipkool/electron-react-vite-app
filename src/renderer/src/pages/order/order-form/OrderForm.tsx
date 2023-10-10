@@ -11,8 +11,8 @@ import {
   findLastOrder,
   findOrderById,
   updateOrder
-} from '@renderer/app/store/features/orders/orderSlice'
-import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
+} from '@renderer/redux/states/orderSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
 import { Product } from '@renderer/app/models/product.model'
 import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
 import { optionsClients, optionsProducts } from '@renderer/data'

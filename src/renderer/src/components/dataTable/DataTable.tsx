@@ -2,7 +2,7 @@ import { DataGrid, GridColDef, GridFooter, GridToolbar } from '@mui/x-data-grid'
 import { Box, useTheme } from '@mui/material'
 import React from 'react'
 /* import { Link } from 'react-router-dom' */
-import { DatagridProps } from '@renderer/app/props/props'
+import { DatagridProps } from '@renderer/app/core/props'
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import imgView from '../../assets/images/view.svg'
 import CustomFooterTotalComponent from './CustomFooterTotalComponent'
@@ -100,6 +100,11 @@ const DataTable = (props: DatagridProps): React.JSX.Element => {
             pagination: {
               paginationModel: {
                 pageSize: 10
+              }
+            },
+            columns: {
+              columnVisibilityModel: {
+                id: false
               }
             }
           }}

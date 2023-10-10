@@ -22,23 +22,23 @@ const initialState: ProductState = {
   searchData: []
 }
 
-export const fetchProducts = createAsyncThunk('fetchProducts', async () => {
+export const fetchProducts = createAsyncThunk('products/fetch', async () => {
   const result = await ProductService.fetchProducts()
   return productDtoToProductModelList(result)
 })
 
-export const deleteProduct = createAsyncThunk('deleteProduct', async (id: number) => {
+export const deleteProduct = createAsyncThunk('products/delete', async (id: number) => {
   const result = await ProductService.deleteProduct(id)
   return result
 })
 
-export const addProduct = createAsyncThunk('addProduct', async (product: CreateProductDto) => {
+export const addProduct = createAsyncThunk('products/create', async (product: CreateProductDto) => {
   const result = await ProductService.addProduct(product)
   return productDtoToProductModel(result)
 })
 
 export const updateProduct = createAsyncThunk(
-  'updateProduct',
+  'products/update',
   async (product: UpdateProductDto) => {
     const result = await ProductService.updateProduct(product.id, product)
     return productDtoToProductModel(result)
@@ -109,9 +109,9 @@ const productSlice = createSlice({
 })
 
 // Selectors
-export const selectProducts = (state) => state.products.products
-export const selectLoadingState = (state) => state.products.loading
-export const selectError = (state) => state.products.error
+export const selectProducts = (state): Product[] => state.products.products
+export const selectLoadingState = (state): boolean => state.products.loading
+export const selectError = (state): string => state.products.error
 
 export default productSlice.reducer
 

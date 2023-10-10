@@ -26,8 +26,8 @@ export const menu = [
     listItems: [
       {
         id: 1,
-        title: 'Usuarios',
-        url: '/users',
+        title: 'Clientes',
+        url: '/clients',
         icon: 'user'
       },
       {

@@ -4,8 +4,8 @@ import DataTable from '@renderer/components/dataTable/DataTable'
 import Add from '@renderer/components/product/add/Add'
 
 import { Product } from '@renderer/app/models/product.model'
-import { deleteProduct, fetchProducts } from '@renderer/app/store/features/products/productSlice'
-import { useAppDispatch, useAppSelector } from '@renderer/app/store/store'
+import { deleteProduct, fetchProducts } from '@renderer/redux/states/productSlice'
+import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
 import './products.scss'
 
 const columns: GridColDef[] = [
