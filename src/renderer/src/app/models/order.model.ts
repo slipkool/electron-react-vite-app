@@ -10,6 +10,4 @@ export interface Order {
   total: number
   partialPayment: number
   images: string[]
-  createdAt: Date
-  updateAt: Date
 }
