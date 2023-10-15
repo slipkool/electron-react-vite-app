@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { GridColDef } from '@mui/x-data-grid'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useNavigate, useParams } from 'react-router-dom'
-import DataTable from '@renderer/components/dataTable/DataTable'
-import Dropzone from '@renderer/components/dropzone/Dropzone'
-import {
-  createOrder,
-  findLastOrder,
-  findOrderById,
-  updateOrder
-} from '@renderer/redux/states/orderSlice'
-import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
-import { Product } from '@renderer/app/models/product.model'
-import { CreateOrderDto, UpdateOrderDto } from '@renderer/app/dtos/order.dto'
-import { optionsClients, optionsProducts } from '@renderer/data'
 
 import './orderForm.scss'
+import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
+import { fetchClients } from '@renderer/redux/states/clientSlice'
+import { fetchProducts } from '@renderer/redux/states/productSlice'
+import { Product } from '@renderer/app/models/product.model'
+import DataTable from '@renderer/components/dataTable/DataTable'
+import { GridColDef } from '@mui/x-data-grid'
 
 type AddFormValues = {
   client: string
@@ -40,7 +32,7 @@ const schema = yup.object({
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', minWidth: 50, maxWidth: 100, flex: 1 },
   {
-    field: 'description',
+    field: 'name',
     type: 'string',
     headerName: 'Prueba',
     minWidth: 400,
@@ -57,15 +49,14 @@ const columns: GridColDef[] = [
 ]
 
 const OrderForm = (): React.JSX.Element => {
-  const [openModalImage, setOpenModalImage] = useState(false)
-  const [formData, setFormData] = useState<FormData>()
   const dispatchApp = useAppDispatch()
-  const navigate = useNavigate()
+  const { clients } = useAppSelector((state) => state.clients)
+  const { products } = useAppSelector((state) => state.products)
   const {
     register,
-    handleSubmit,
     setValue,
     getValues,
+    handleSubmit,
     formState: { errors }
   } = useForm<AddFormValues>({
     resolver: yupResolver(schema),
@@ -73,24 +64,15 @@ const OrderForm = (): React.JSX.Element => {
       partialPayment: 0
     }
   })
-
-  const [productSelected, setProductSelected] = useState('')
   const [total, setTotal] = useState(0)
-  const [customErrors, setCustomErrors] = useState<string | null>('')
+  const [productSelected, setProductSelected] = useState('')
   const [productListSelected, setProductListSelected] = useState<Product[]>([])
-  const { id } = useParams() ?? 0
-  const order = useAppSelector((state) => findOrderById(state, Number(id)))
-  const orderList = useAppSelector((state) => state.orders)
-
-  const isAddMode = !order
+  const [customErrors, setCustomErrors] = useState<string | null>(null)
+  const [openModalImage, setOpenModalImage] = useState(false)
 
   useEffect(() => {
-    if (isAddMode) return
-    setValue('client', order.client.id.toString())
-    setValue('patient', order?.patient)
-    setValue('paid', order?.paid)
-    setValue('partialPayment', order?.partialPayment)
-    setProductListSelected(order?.products)
+    dispatchApp(fetchClients())
+    dispatchApp(fetchProducts())
   }, [])
 
   useEffect(() => {
@@ -100,37 +82,35 @@ const OrderForm = (): React.JSX.Element => {
     setValue('paid', +partialPayment === total)
   }, [productListSelected])
 
-  useEffect(() => {
-    console.log(orderList)
-  }, [orderList])
-
-  const onChange = (event): void => {
-    const test = optionsProducts.find((test) => {
-      return test.id === +event.target.value
-    })
-
-    if (test === undefined) {
-      return
-    }
-
-    setProductListSelected((prevArray) => [...prevArray, test])
-    setProductSelected('')
-  }
-
   const onChangePartialPayment = (event): void => {
     setValue('paid', +event.target.value === total)
   }
 
+  const onChangeProductSelected = (event): void => {
+    const product = products.find((item) => {
+      return item.id === +event.target.value
+    })
+
+    if (product === undefined) {
+      return
+    }
+
+    setProductListSelected((prevArray) => [...prevArray, product])
+    setProductSelected('')
+  }
+
+  const onDelete = (data: number): void => {
+    const newItems = productListSelected.filter((item) => item.id !== data)
+    setProductListSelected(newItems)
+  }
+
   const onSubmit = (data: AddFormValues, event): void => {
     event.preventDefault()
+    setCustomErrors(null)
 
     if (!isValidOrder(data)) {
       return
     }
-
-    isAddMode ? create(data) : update(order.id, data)
-
-    //navigate('/orders')
   }
 
   const isValidOrder = (data: AddFormValues): boolean => {
@@ -146,53 +126,17 @@ const OrderForm = (): React.JSX.Element => {
     return true
   }
 
-  const create = (data: AddFormValues): void => {
-    const createOrderDto: CreateOrderDto = {
-      patient: data.patient,
-      clientId: +data.client,
-      productsIds: productListSelected.map((product) => product.id),
-      paid: data.paid,
-      total: total,
-      partialPayment: data.partialPayment,
-      images: [],
-      createdAt: new Date(),
-      updateAt: new Date()
-    }
-    dispatchApp(createOrder(createOrderDto))
-
-    //formData?.append('clientId', createOrderDto.clientId)
-    //formData?.append('orderId', createOrderDto.clientId)
-  }
-
-  const update = (id: number, data: AddFormValues): void => {
-    const updateOrderDto: UpdateOrderDto = {
-      id,
-      patient: data.patient,
-      clientId: +data.client,
-      productsIds: productListSelected.map((product) => product.id),
-      paid: data.paid,
-      total: total,
-      partialPayment: data.partialPayment,
-      images: [],
-      updateAt: new Date()
-    }
-    dispatchApp(updateOrder(updateOrderDto))
-  }
-
-  const onDelete = (data: number): void => {
-    const newItems = productListSelected.filter((item) => item.id !== data)
-    setProductListSelected(newItems)
-  }
-
   return (
     <div className="order">
       <h1>Nueva Orden</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="item">
           <label>Nombre del cliente</label>
-          <select {...register('client')}>
-            <option value="">--Seleccione--</option>
-            {optionsClients.map((option) => (
+          <select {...register('client')} defaultValue="">
+            <option value="" disabled>
+              -- Seleccione --
+            </option>
+            {clients.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>
@@ -229,18 +173,16 @@ const OrderForm = (): React.JSX.Element => {
         </div>
         <div className="item">
           <label>Listado de pruebas</label>
-          <select onChange={onChange} value={productSelected}>
-            <option value="">--Seleccione--</option>
-            {optionsProducts.map((option) => (
+          <select onChange={onChangeProductSelected} value={productSelected}>
+            <option value="" disabled>
+              -- Seleccione --
+            </option>
+            {products.map((option) => (
               <option key={option.id} value={option.id}>
-                {option.description}
+                {option.name}
               </option>
             ))}
           </select>
-        </div>
-        <div className="item">
-          <label>Pagado</label>
-          <input type="checkbox" {...register('paid')} disabled />
         </div>
         <div className="item">
           <label>Imagenes</label>
@@ -268,7 +210,6 @@ const OrderForm = (): React.JSX.Element => {
         </div>
         <button className="btn">Guardar</button>
       </form>
-      {openModalImage && <Dropzone setOpen={setOpenModalImage} setFormData={setFormData} />}
     </div>
   )
 }

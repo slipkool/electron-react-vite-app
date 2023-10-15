@@ -1,14 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GridCellParams, GridColDef } from '@mui/x-data-grid'
 import moment from 'moment'
 import DataTable from '@renderer/components/dataTable/DataTable'
-import OrderForm from '@renderer/pages/order/order-form/OrderForm'
-import { Order } from '@renderer/app/models/order.model'
-import { removeOrder } from '@renderer/redux/states/orderSlice'
+import { deleteOrder, fetchOrders } from '@renderer/redux/states/orderSlice'
 import { useAppDispatch, useAppSelector } from '@renderer/redux/store'
 
-import noavatar from '@renderer/assets/images/noavatar.png'
 import './orderList.scss'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -19,7 +16,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 const columns: GridColDef[] = [
   {
     field: 'id',
-    headerName: 'ID',
+    headerName: 'id',
     minWidth: 50,
     maxWidth: 100,
     flex: 1,
@@ -27,18 +24,7 @@ const columns: GridColDef[] = [
     align: 'left'
   },
   {
-    field: 'img',
-    headerName: 'Avatar',
-    flex: 1,
-    disableExport: true,
-    renderCell: (params): React.JSX.Element => {
-      return <img src={params.row.img || noavatar} alt="" />
-    },
-    headerAlign: 'center',
-    align: 'center'
-  },
-  {
-    field: 'client',
+    field: 'client_name',
     type: 'string',
     headerName: 'Cliente',
     minWidth: 100,
@@ -68,7 +54,7 @@ const columns: GridColDef[] = [
     align: 'left'
   },
   {
-    field: 'Deuda',
+    field: 'debt',
     headerName: 'Deuda',
     description: 'Saldo a deber',
     flex: 1,
@@ -90,7 +76,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'createdAt',
-    headerName: 'Fecha',
+    headerName: 'Fecha Creacion',
     flex: 1,
     type: 'dateTime',
     valueFormatter: (params) => moment(params?.value).format('DD/MM/YYYY hh:mm A'),
@@ -109,28 +95,27 @@ const columns: GridColDef[] = [
 
 const OrderList = (): React.JSX.Element => {
   const dispatchApp = useAppDispatch()
+  const { orders, loading } = useAppSelector((state) => state.orders)
   const navigate = useNavigate()
-  const [orderSelected, setOrderSelected] = useState<Order>()
-  const [open, setOpen] = useState(false)
-  const orderList = useAppSelector((state) => state.orders)
 
-  const onSaveEvent = (): void => {}
+  useEffect(() => {
+    dispatchApp(fetchOrders())
+  }, [])
 
   const onDelete = (id: number): void => {
-    dispatchApp(removeOrder(id))
+    dispatchApp(deleteOrder(id))
   }
 
   const onView = (id: number): void => {
-    /* const order = orderList.find((item) => item.id === data)
-    setOrderSelected(order)
-    setOpen(true) */
     navigate(`/orders/${id}`)
   }
 
   const onOpenAdd = (): void => {
     navigate('/orders/add')
-    /* setOrderSelected(undefined)
-    setOpen(true) */
+  }
+
+  if (loading) {
+    return <h2>Loading</h2>
   }
 
   return (
@@ -144,23 +129,13 @@ const OrderList = (): React.JSX.Element => {
       <DataTable
         slug="users"
         columns={columns}
-        rows={orderList}
+        rows={orders}
         disableToolbar={false}
         disableViewAction={false}
         disableFooterTotalBar={true}
         deleteEvent={onDelete}
         viewEvent={onView}
       />
-
-      {open && (
-        <OrderForm
-          slug="orden"
-          columns={columns}
-          setOpen={setOpen}
-          saveEvent={onSaveEvent}
-          order={orderSelected}
-        />
-      )}
     </div>
   )
 }

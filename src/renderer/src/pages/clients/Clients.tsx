@@ -80,7 +80,6 @@ const Clients = (): React.JSX.Element => {
   }
 
   const onView = (data: number): void => {
-    console.log(data)
     const clientSelected = clients.find((client) => client.id === data)
     if (clientSelected) {
       setClient(clientSelected)

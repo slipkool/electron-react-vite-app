@@ -135,8 +135,8 @@ const Add = (props: AddProps<Client>): React.JSX.Element => {
           </div>
           <div className="item">
             <label>Tipo de documento</label>
-            <select {...register('documentType')}>
-              <option value="" disabled selected={true}>
+            <select {...register('documentType')} defaultValue="">
+              <option value="" disabled>
                 -- Seleccione --
               </option>
               {documentType.map((element) => (

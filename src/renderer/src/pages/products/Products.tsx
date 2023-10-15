@@ -46,7 +46,6 @@ const Products = (): React.JSX.Element => {
   }
 
   const onView = (data: number): void => {
-    console.log(data)
     const productSelected = products.find((product) => product.id === data)
     if (productSelected) {
       setProduct(productSelected)
