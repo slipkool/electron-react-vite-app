@@ -65,7 +65,7 @@ const productSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
       })
       .addCase(addProduct.pending, (state) => {
         state.loading = true
@@ -76,7 +76,7 @@ const productSlice = createSlice({
       })
       .addCase(addProduct.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
       })
       .addCase(updateProduct.pending, (state) => {
         state.loading = true
@@ -89,7 +89,7 @@ const productSlice = createSlice({
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
       })
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true
@@ -103,7 +103,7 @@ const productSlice = createSlice({
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
       })
   }
 })

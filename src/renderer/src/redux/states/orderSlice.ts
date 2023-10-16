@@ -26,6 +26,11 @@ export const fetchOrders = createAsyncThunk('orders/fetch', async () => {
   return orderDtoToOrderModelList(result)
 })
 
+export const fetchOrderById = createAsyncThunk('orders/fetchById', async (id: number) => {
+  const result = await OrderService.fetchOrderById(id)
+  return orderDtoToOrderModel(result)
+})
+
 export const deleteOrder = createAsyncThunk('products/delete', async (id: number) => {
   const result = await OrderService.deleteOrder(id)
   return result
@@ -56,7 +61,20 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
+      })
+      .addCase(fetchOrderById.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(fetchOrderById.fulfilled, (state, action) => {
+        state.loading = false
+        state.orders = state.orders.map((ele) =>
+          ele.id === action.payload.id ? action.payload : ele
+        )
+      })
+      .addCase(fetchOrderById.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message ?? null
       })
       .addCase(addOrder.pending, (state) => {
         state.loading = true
@@ -67,7 +85,7 @@ const orderSlice = createSlice({
       })
       .addCase(addOrder.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload.message
+        state.error = action.error.message ?? null
       })
       .addCase(updateOrder.pending, (state) => {
         state.loading = true
@@ -101,9 +119,11 @@ const orderSlice = createSlice({
 
 // Selectors
 const orders = (state: RootState): Order[] => state.orders.orders
-export const dataGridSelector = createSelector([orders], (orders) => {
-  console.log(orders)
-  return null
-})
+export const findOrderById = createSelector(
+  [orders, (orders, id: number): number => id],
+  (orders, id): Order | undefined => {
+    return orders.find((order) => order.id === id)
+  }
+)
 
 export default orderSlice.reducer

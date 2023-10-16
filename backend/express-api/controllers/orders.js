@@ -1,7 +1,7 @@
 import { validateOrder, validatePartialOrder } from '../schemas/orders.js'
 
 export class OrderController {
-  constructor({ orderModel, clientModel, orderProductModel }) {
+  constructor ({ orderModel, clientModel, orderProductModel }) {
     this.orderModel = orderModel
     this.clientModel = clientModel
     this.orderProductModel = orderProductModel

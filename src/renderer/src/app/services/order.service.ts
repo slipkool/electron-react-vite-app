@@ -11,6 +11,10 @@ const fetchOrders = () => {
   return http.get<Order[]>(ORDERS_ENDPOINT).then(responseBody)
 }
 
+const fetchOrderById = (id) => {
+  return http.get<Order[]>(getOrderUrl(id)).then(responseBody)
+}
+
 const deleteOrder = (id) => {
   return http.delete(getOrderUrl(id)).then(responseBody)
 }
@@ -25,6 +29,7 @@ const updateOrder = (id, order: UpdateOrderDto) => {
 
 const OrderService = {
   fetchOrders,
+  fetchOrderById,
   deleteOrder,
   addOrder,
   updateOrder

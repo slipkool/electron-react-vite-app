@@ -12,8 +12,8 @@ import DataTable from '@renderer/components/dataTable/DataTable'
 import { GridColDef } from '@mui/x-data-grid'
 import { useNavigate, useParams } from 'react-router-dom'
 import Dropzone from '@renderer/components/dropzone/Dropzone'
-import { CreateOrderDto } from '@renderer/app/dtos/order.dto'
-import { addOrder } from '@renderer/redux/states/orderSlice'
+import { CreateOrderDto, OrderDto } from '@renderer/app/dtos/order.dto'
+import { addOrder, fetchOrderById, findOrderById } from '@renderer/redux/states/orderSlice'
 
 type AddFormValues = {
   client: string
@@ -75,12 +75,19 @@ const OrderForm = (): React.JSX.Element => {
   const [customErrors, setCustomErrors] = useState<string | null>(null)
   const [openModalImage, setOpenModalImage] = useState(false)
   const [formData, setFormData] = useState<FormData | null>(null)
-  const { id } = useParams() ?? 0
+  const routeParams = useParams()
+  const id = routeParams.id ?? 0
   const isAddMode = !id
+  const [orderSelected, setOrderSelected] = useState<OrderDto | null>(null)
 
   useEffect(() => {
     dispatchApp(fetchClients())
     dispatchApp(fetchProducts())
+    if (id) {
+      dispatchApp(fetchOrderById(+id)).then((result) => {
+        if (result.payload) setOrderSelected(result.payload as OrderDto)
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -89,6 +96,12 @@ const OrderForm = (): React.JSX.Element => {
     const partialPayment = getValues('partialPayment')
     setValue('paid', +partialPayment === total)
   }, [productListSelected])
+
+  useEffect(() => {
+    if (orderSelected) {
+      console.log(orderSelected)
+    }
+  }, [orderSelected])
 
   const onChangePartialPayment = (event): void => {
     setValue('paid', +event.target.value === total)
