@@ -10,6 +10,10 @@ import { fetchProducts } from '@renderer/redux/states/productSlice'
 import { Product } from '@renderer/app/models/product.model'
 import DataTable from '@renderer/components/dataTable/DataTable'
 import { GridColDef } from '@mui/x-data-grid'
+import { useNavigate, useParams } from 'react-router-dom'
+import Dropzone from '@renderer/components/dropzone/Dropzone'
+import { CreateOrderDto } from '@renderer/app/dtos/order.dto'
+import { addOrder } from '@renderer/redux/states/orderSlice'
 
 type AddFormValues = {
   client: string
@@ -49,6 +53,7 @@ const columns: GridColDef[] = [
 ]
 
 const OrderForm = (): React.JSX.Element => {
+  const navigate = useNavigate()
   const dispatchApp = useAppDispatch()
   const { clients } = useAppSelector((state) => state.clients)
   const { products } = useAppSelector((state) => state.products)
@@ -69,6 +74,9 @@ const OrderForm = (): React.JSX.Element => {
   const [productListSelected, setProductListSelected] = useState<Product[]>([])
   const [customErrors, setCustomErrors] = useState<string | null>(null)
   const [openModalImage, setOpenModalImage] = useState(false)
+  const [formData, setFormData] = useState<FormData | null>(null)
+  const { id } = useParams() ?? 0
+  const isAddMode = !id
 
   useEffect(() => {
     dispatchApp(fetchClients())
@@ -111,6 +119,27 @@ const OrderForm = (): React.JSX.Element => {
     if (!isValidOrder(data)) {
       return
     }
+
+    isAddMode ? create(data) : update(parseInt(id), data)
+  }
+
+  const create = (data: AddFormValues): void => {
+    const newOrder: CreateOrderDto = {
+      clientId: +data.client,
+      paid: data.paid,
+      partialPayment: data.partialPayment,
+      patient: data.patient,
+      productsIds: productListSelected.map((product) => product.id),
+      images: [],
+      total
+    }
+    dispatchApp(addOrder(newOrder))
+    navigate('/orders')
+  }
+
+  const update = (id: number, data: AddFormValues): void => {
+    console.log(id, data)
+    navigate('/orders')
   }
 
   const isValidOrder = (data: AddFormValues): boolean => {
@@ -210,6 +239,7 @@ const OrderForm = (): React.JSX.Element => {
         </div>
         <button className="btn">Guardar</button>
       </form>
+      {openModalImage && <Dropzone setOpen={setOpenModalImage} setFormData={setFormData} />}
     </div>
   )
 }

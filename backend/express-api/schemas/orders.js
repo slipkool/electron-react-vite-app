@@ -1,13 +1,19 @@
 import z from 'zod'
 
 const orderSchema = z.object({
-  name: z.string({
-    invalid_type_error: 'El nombre del cliente debe ser texto.',
-    required_error: 'Nombre del cliente es requerido.'
+  patient: z.string({
+    invalid_type_error: 'El nombre del paciente debe ser texto.',
+    required_error: 'Nombre del paciente es requerido.'
   }),
-  price: z.number({
-    required_error: 'Precio es requerido.'
-  }).int().positive()
+  clientId: z.number({
+    required_error: 'El cliente es requerido.'
+  }).int().positive(),
+  total: z.number({
+    required_error: 'El valor total es requerido.'
+  }).int().positive(),
+  partialPayment: z.number().int().positive(),
+  productsIds: z.array(z.number()).nonempty(),
+  paid: z.boolean()
 })
 
 export function validateOrder (input) {

@@ -8,7 +8,7 @@ import './dropzone.scss'
 
 type ModalProps = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setFormData: React.Dispatch<React.SetStateAction<FormData | undefined>>
+  setFormData: React.Dispatch<React.SetStateAction<FormData | null>>
 }
 
 const baseStyle: React.CSSProperties = {

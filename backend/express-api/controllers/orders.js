@@ -10,10 +10,7 @@ export class OrderController {
   getAll = async (req, res) => {
     const orders = await this.orderModel.getAll()
     for (const key in orders) {
-      const cliente = await this.clientModel.getById({ id: orders[key].cliente_id })
-      orders[key].cliente = cliente
-      const productos = await this.orderProductModel.getProductsByOrderId({ id: orders[key].id })
-      orders[key].productos = productos
+      await this.fillOrderInfo(orders[key], orders[key].id, orders[key].cliente_id)
     }
     res.json(orders)
   }
@@ -29,13 +26,16 @@ export class OrderController {
     const result = validateOrder(req.body)
 
     if (!result.success) {
-    // 422 Unprocessable Entity
+      // 422 Unprocessable Entity
       return res.status(400).json({ error: JSON.parse(result.error.message) })
     }
 
-    const newProduct = await this.orderModel.create({ input: result.data })
+    const newOrder = await this.orderModel.create({ input: result.data })
 
-    if (newProduct) return res.status(201).json(newProduct)
+    if (newOrder) {
+      await this.fillOrderInfo(newOrder, newOrder.id, newOrder.cliente_id)
+      return res.status(201).json(newOrder)
+    }
     res.status(404).json({ message: 'Error al guardar la prueba de laboratorio' })
   }
 
@@ -64,5 +64,12 @@ export class OrderController {
 
     if (updatedProduct) return res.json(updatedProduct)
     res.status(404).json({ message: 'Error al actualizar la Prueba de laboratorio' })
+  }
+
+  fillOrderInfo = async (order, orderId, clientId) => {
+    const cliente = await this.clientModel.getById({ id: clientId })
+    order.cliente = cliente
+    const productos = await this.orderProductModel.getProductsByOrderId({ id: orderId })
+    order.productos = productos
   }
 }
