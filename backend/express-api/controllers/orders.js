@@ -1,7 +1,7 @@
 import { validateOrder, validatePartialOrder } from '../schemas/orders.js'
 
 export class OrderController {
-  constructor ({ orderModel, clientModel, orderProductModel }) {
+  constructor({ orderModel, clientModel, orderProductModel }) {
     this.orderModel = orderModel
     this.clientModel = clientModel
     this.orderProductModel = orderProductModel
@@ -17,8 +17,11 @@ export class OrderController {
 
   getById = async (req, res) => {
     const { id } = req.params
-    const product = await this.orderModel.getById({ id })
-    if (product) return res.json(product)
+    const order = await this.orderModel.getById({ id })
+    if (order) {
+      await this.fillOrderInfo(order, order.id, order.cliente_id)
+      return res.json(order)
+    }
     res.status(404).json({ message: 'Prueba de laboratorio no encontrado' })
   }
 

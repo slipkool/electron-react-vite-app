@@ -14,7 +14,7 @@ export interface UpdateProductDto extends Partial<CreateProductDto> {
 
 export const productDtoToProductModel = (productDto: ProductDto): Product => {
   const product: Product = {
-    id: productDto.id,
+    id: +productDto.id,
     name: productDto.nombre,
     price: productDto.precio
   }

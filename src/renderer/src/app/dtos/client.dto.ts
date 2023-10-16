@@ -18,7 +18,7 @@ export interface UpdateClientDto extends Partial<CreateClientDto> {
 
 export const clientDtoToClientModel = (clientDto: ClientDto): Client => {
   const client: Client = {
-    id: clientDto.id,
+    id: +clientDto.id,
     name: clientDto.nombre,
     documentType: clientDto.tipo_documento,
     identification: clientDto.identificacion,

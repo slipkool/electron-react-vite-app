@@ -55,25 +55,33 @@ export class OrderModel {
           return order
         }
       }
-      return null
     } catch (error) {
       console.log(error)
-      return null
     }
+    return null
   }
 
   static async delete ({ id }) {
-    const testLab = await this.getById({ id })
-    if (testLab) {
-      const pool = await connection
-      const rs = await pool
-        .request()
-        .input('id', id)
-        .query('DELETE FROM pruebas_laboratorio WHERE prueba_id = @id')
+    try {
+      const order = await this.getById({ id })
+      if (order) {
+        const pool = await connection
+        let rs = await pool
+          .request()
+          .input('id', id)
+          .query('DELETE FROM ordenes_pruebas WHERE orden_id = @id')
 
-      return rs.rowsAffected[0] > 0
+        if (rs.rowsAffected[0] > 0) {
+          rs = await pool
+            .request()
+            .input('id', id)
+            .query('DELETE FROM ordenes WHERE orden_id = @id')
+          return rs.rowsAffected[0] > 0
+        }
+      }
+    } catch (error) {
+      console.log(error)
     }
-
     return false
   }
 

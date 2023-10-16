@@ -26,7 +26,7 @@ export interface UpdateOrderDto extends Partial<CreateOrderDto> {
 
 export const orderDtoToOrderModel = (orderDto: OrderDto): Order => {
   const order: Order = {
-    id: orderDto.id,
+    id: +orderDto.id,
     client: clientDtoToClientModel(orderDto.cliente),
     patient: orderDto.paciente,
     paid: orderDto.pagado,
