@@ -1,5 +1,5 @@
-import sql from 'mssql'
-import 'dotenv/config'
+import sql from 'mssql';
+import 'dotenv/config';
 
 const DEFAULT_CONFIG = {
   user: process.env.DB_USER,
@@ -9,15 +9,15 @@ const DEFAULT_CONFIG = {
   options: {
     trustedConnection: true,
     trustServerCertificate: true
-  }
+  },
 }
 
 const connectionString = process.env.DATABASE_URL ?? DEFAULT_CONFIG
 
 export const connection = new sql.ConnectionPool(connectionString)
   .connect()
-  .then(pool => {
-    console.log('Connected to SQLServer...')
+  .then((pool) => {
+    console.log('Connected to SQLServer...');
     return pool
   })
-  .catch(err => console.log('Database Connection Failed! Bad Config: ', err))
+  .catch((err) => console.log('Database Connection Failed! Bad Config: ', err))

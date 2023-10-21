@@ -1,5 +1,5 @@
-import { connection } from './config/database.js'
-import sql from 'mssql'
+import { connection } from './config/database.js';
+import sql from 'mssql';
 
 export class OrderModel {
   static async getAll () {
@@ -24,7 +24,15 @@ export class OrderModel {
 
   static async create ({ input }) {
     try {
-      const { clientId, patient, paid, total, partialPayment, images, productsIds } = input
+      const {
+        clientId,
+        patient,
+        paid,
+        total,
+        partialPayment,
+        images,
+        productsIds
+      } = input
 
       const pool = await connection
       const rs = await pool
@@ -41,10 +49,16 @@ export class OrderModel {
           SELECT @id = SCOPE_IDENTITY();`)
 
       if (rs.output.id) {
-        const table = new sql.Table('ordenes_pruebas')
+        const table = new sql.Table('ordenes_pruebas');
         table.create = false
-        table.columns.add('orden_id', sql.Int, { nullable: false, primary: true })
-        table.columns.add('prueba_id', sql.Int, { nullable: false, primary: true })
+        table.columns.add('orden_id', sql.Int, {
+          nullable: false,
+          primary: true
+        });
+        table.columns.add('prueba_id', sql.Int, {
+          nullable: false,
+          primary: true
+        });
         for (const productId of productsIds) {
           table.rows.add(rs.output.id, productId)
         }
@@ -69,13 +83,13 @@ export class OrderModel {
         let rs = await pool
           .request()
           .input('id', id)
-          .query('DELETE FROM ordenes_pruebas WHERE orden_id = @id')
+          .query('DELETE FROM ordenes_pruebas WHERE orden_id = @id');
 
         if (rs.rowsAffected[0] > 0) {
           rs = await pool
             .request()
             .input('id', id)
-            .query('DELETE FROM ordenes WHERE orden_id = @id')
+            .query('DELETE FROM ordenes WHERE orden_id = @id');
           return rs.rowsAffected[0] > 0
         }
       }
@@ -86,27 +100,54 @@ export class OrderModel {
   }
 
   static async update ({ id, input }) {
-    const testLab = await this.getById({ id })
-    if (!testLab) {
-      return null
-    }
+    try {
+      const order = await this.getById({ id });
+      if (!order) {
+        return null;
+      }
 
-    const updateTestLab = {
-      ...testLab,
-      ...input
-    }
+      const pool = await connection;
+      const rs = await pool
+        .request()
+        .input("id", id)
+        .input("clientId", input.clientId)
+        .input("patient", input.patient)
+        .input("paid", input.paid)
+        .input('total', input.total)
+        .input("partialPayment", input.partialPayment).query(`UPDATE ordenes
+      SET cliente_id = @clientId, paciente = @patient, pagado = @paid, total = @total, abono = @partialPayment, fecha_actualizacion = GETDATE()
+      WHERE id = @id`)
 
-    const pool = await connection
-    const rs = await pool
-      .request()
-      .input('id', id)
-      .input('name', updateTestLab.name)
-      .input('price', updateTestLab.price).query(`UPDATE pruebas_laboratorio
-      SET nombre = @name, precio = @price
-      WHERE prueba_id = @id`)
+      if (rs.rowsAffected[0] > 0) {
+        const rs = await pool
+          .request()
+          .input("id", id)
+          .query('DELETE FROM ordenes_pruebas WHERE orden_id = @id');
 
-    if (rs.rowsAffected[0] > 0) {
-      return await this.getById({ id })
+        if (rs.rowsAffected[0] > 0) {
+          const table = new sql.Table("ordenes_pruebas");
+          table.create = false;
+          table.columns.add("orden_id", sql.Int, {
+            nullable: false,
+            primary: true,
+          })
+          table.columns.add('prueba_id', sql.Int, {
+            nullable: false,
+            primary: true,
+          })
+          for (const productId of input.productsIds) {
+            table.rows.add(id, productId)
+          }
+          const results = await pool.request().bulk(table);
+
+          if (results.rowsAffected > 0) {
+            const order = await this.getById({ id });
+            return order;
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
 
     return null

@@ -47,6 +47,14 @@ button,
   }
 }
 
+.btn_dialog {
+  color: $inputColor !important;
+  &:hover {
+    background: $main-color;
+    color: $textColor;
+  }
+}
+
 .error-message {
   display: block;
   color: tomato;

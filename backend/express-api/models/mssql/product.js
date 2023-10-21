@@ -1,11 +1,13 @@
-import { connection } from './config/database.js'
+import { connection } from './config/database.js';
 
 export class ProductModel {
   static async getAll () {
     const pool = await connection
     const rs = await pool
       .request()
-      .query('SELECT prueba_id as id, nombre, precio FROM pruebas_laboratorio;')
+      .query(
+        'SELECT prueba_id as id, nombre, precio FROM pruebas_laboratorio;',
+      )
 
     return rs.recordset
   }
@@ -15,7 +17,9 @@ export class ProductModel {
     const rs = await pool
       .request()
       .input('id', id)
-      .query('SELECT prueba_id as id, nombre, precio FROM pruebas_laboratorio WHERE prueba_id = @id ')
+      .query(
+        'SELECT prueba_id as id, nombre, precio FROM pruebas_laboratorio WHERE prueba_id = @id ',
+      )
 
     if (rs.recordset.length === 0) return null
 
@@ -23,18 +27,14 @@ export class ProductModel {
   }
 
   static async create ({ input }) {
-    const {
-      name,
-      price
-    } = input
+    const { name, price } = input
 
     const pool = await connection
     const rs = await pool
       .request()
       .input('name', name)
       .input('price', price)
-      .output('id')
-      .query(`INSERT INTO pruebas_laboratorio (nombre, precio) 
+      .output('id').query(`INSERT INTO pruebas_laboratorio (nombre, precio) 
         VALUES (@name, @price);
         SELECT @id = SCOPE_IDENTITY();`)
 
@@ -52,7 +52,7 @@ export class ProductModel {
       const rs = await pool
         .request()
         .input('id', id)
-        .query('DELETE FROM pruebas_laboratorio WHERE prueba_id = @id')
+        .query('DELETE FROM pruebas_laboratorio WHERE prueba_id = @id');
 
       return rs.rowsAffected[0] > 0
     }
@@ -69,15 +69,14 @@ export class ProductModel {
     const updateTestLab = {
       ...testLab,
       ...input
-    }
+    };
 
     const pool = await connection
     const rs = await pool
       .request()
       .input('id', id)
       .input('name', updateTestLab.name)
-      .input('price', updateTestLab.price)
-      .query(`UPDATE pruebas_laboratorio
+      .input('price', updateTestLab.price).query(`UPDATE pruebas_laboratorio
       SET nombre = @name, precio = @price
       WHERE prueba_id = @id`)
 

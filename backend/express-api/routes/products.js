@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import { ProductController } from '../controllers/products.js'
+import { Router } from 'express';
+import { ProductController } from '../controllers/products.js';
 
 export const createProductsRouter = ({ productModel }) => {
   const productRouter = Router()
@@ -16,4 +16,4 @@ export const createProductsRouter = ({ productModel }) => {
   productRouter.patch('/:id', productController.update)
 
   return productRouter
-}
+};

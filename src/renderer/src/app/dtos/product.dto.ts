@@ -1,26 +1,30 @@
-import { Product } from '@renderer/app/models/product.model'
+import { Product } from "@renderer/app/models/product.model";
 
 export interface ProductDto {
-  id: number
-  nombre: string
-  precio: number
+  id: number;
+  nombre: string;
+  precio: number;
 }
 
-export interface CreateProductDto extends Omit<Product, 'id'> {}
+export interface CreateProductDto extends Omit<Product, "id"> {}
 
 export interface UpdateProductDto extends Partial<CreateProductDto> {
-  id: number
+  id: number;
 }
 
 export const productDtoToProductModel = (productDto: ProductDto): Product => {
   const product: Product = {
     id: +productDto.id,
     name: productDto.nombre,
-    price: productDto.precio
-  }
-  return product
-}
+    price: productDto.precio,
+  };
+  return product;
+};
 
-export const productDtoToProductModelList = (productDtoList: ProductDto[]): Product[] => {
-  return productDtoList.map((productDto) => productDtoToProductModel(productDto))
-}
+export const productDtoToProductModelList = (
+  productDtoList: ProductDto[],
+): Product[] => {
+  return productDtoList.map((productDto) =>
+    productDtoToProductModel(productDto),
+  );
+};

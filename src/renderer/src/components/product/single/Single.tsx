@@ -1,18 +1,18 @@
-import React from 'react'
+import React from "react";
 
-import './single.scss'
+import "./single.scss";
 
 type Props = {
-  id: number
-  img?: string
-  title: string
-  info: object
+  id: number;
+  img?: string;
+  title: string;
+  info: object;
   chart?: {
-    dataKeys: { name: string; color: string }[]
-    data: object[]
-  }
-  activities?: { time: string; text: string }[]
-}
+    dataKeys: { name: string; color: string }[];
+    data: object[];
+  };
+  activities?: { time: string; text: string }[];
+};
 
 const Single = (props: Props): React.JSX.Element => {
   return (
@@ -52,7 +52,7 @@ const Single = (props: Props): React.JSX.Element => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Single
+export default Single;

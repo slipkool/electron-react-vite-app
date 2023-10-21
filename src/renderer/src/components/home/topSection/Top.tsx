@@ -1,39 +1,39 @@
-import React from 'react'
-import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import React from "react";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 
-import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined'
+import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 
-import './top.scss'
+import "./top.scss";
 
-import video from '../../../assets/videos/video.mp4'
-import img from '../../../assets/images/pets.png'
+import video from "../../../assets/videos/video.mp4";
+import img from "../../../assets/images/pets.png";
 
-import { tokens } from '../../../theme'
+import { tokens } from "../../../theme";
 
 const Top = (): React.JSX.Element => {
-  const theme = useTheme()
-  const colors = tokens(theme.palette.mode)
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const sxPropCSS = {
-    position: 'relative',
-    padding: '1rem',
-    height: '200px',
-    borderRadius: '1rem',
-    justifyContent: 'space-between',
+    position: "relative",
+    padding: "1rem",
+    height: "200px",
+    borderRadius: "1rem",
+    justifyContent: "space-between",
     bgcolor: colors.primary[400],
-    display: 'flex',
-    alignItems: 'center',
-    '&::before': {
+    display: "flex",
+    alignItems: "center",
+    "&::before": {
       content: '""',
-      position: 'absolute',
-      height: '100%',
-      width: '75%',
+      position: "absolute",
+      height: "100%",
+      width: "75%",
       left: 0,
       bottom: 0,
-      borderRadius: '1rem',
-      bgcolor: colors.blueAccent[800]
-    }
-  }
+      borderRadius: "1rem",
+      bgcolor: colors.blueAccent[800],
+    },
+  };
 
   return (
     <Box sx={{ bgcolor: colors.primary[400] }}>
@@ -41,7 +41,9 @@ const Top = (): React.JSX.Element => {
         <div className="cardSection flex">
           <div className="rightCard flex">
             <h1>Create and sell extraordinary products</h1>
-            <p>The world`s fast growing industry today are natural made products!</p>
+            <p>
+              The world`s fast growing industry today are natural made products!
+            </p>
 
             <div className="buttons flex">
               <button className="btn">Explore more</button>
@@ -62,24 +64,30 @@ const Top = (): React.JSX.Element => {
                   <div className="flex">
                     <span>
                       <Typography color={colors.grey[100]}>
-                        Today <br />{' '}
+                        Today <br />{" "}
                       </Typography>
                       <small>
-                        <Typography color={colors.grey[400]}>4 orders</Typography>
+                        <Typography color={colors.grey[400]}>
+                          4 orders
+                        </Typography>
                       </small>
                     </span>
                     <span>
                       <Typography color={colors.grey[100]}>
-                        This month <br />{' '}
+                        This month <br />{" "}
                       </Typography>
                       <small>
-                        <Typography color={colors.grey[400]}>175 orders</Typography>
+                        <Typography color={colors.grey[400]}>
+                          175 orders
+                        </Typography>
                       </small>
                     </span>
                   </div>
 
                   <span className="flex link">
-                    <Typography color={colors.grey[100]}>Go to my orders </Typography>
+                    <Typography color={colors.grey[100]}>
+                      Go to my orders{" "}
+                    </Typography>
                     <IconButton>
                       <ArrowRightAltOutlinedIcon className="icon" />
                     </IconButton>
@@ -95,7 +103,7 @@ const Top = (): React.JSX.Element => {
         </div>
       </div>
     </Box>
-  )
-}
+  );
+};
 
-export default Top
+export default Top;

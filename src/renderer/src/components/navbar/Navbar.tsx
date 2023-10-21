@@ -1,27 +1,27 @@
-import React, { useContext } from 'react'
+import React, { useContext } from "react";
 
-import './navbar.scss'
+import "./navbar.scss";
 
 //imports icons
-import { Box, IconButton, Typography, useTheme } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
-import CropFreeIcon from '@mui/icons-material/CropFree'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import SettingsIcon from '@mui/icons-material/Settings'
-import PetsIcon from '@mui/icons-material/Pets'
-import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import CropFreeIcon from "@mui/icons-material/CropFree";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PetsIcon from "@mui/icons-material/Pets";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 
 //import image
-import logo from '../../assets/images/logo.png'
-import img from '../../assets/images/user.png'
+import logo from "../../assets/images/logo.png";
+import img from "../../assets/images/user.png";
 
-import { ColorModeContext, tokens } from '../../theme'
+import { ColorModeContext, tokens } from "../../theme";
 
 const Navbar = (): React.JSX.Element => {
-  const theme = useTheme()
-  const colors = tokens(theme.palette.mode)
-  const colorMode = useContext(ColorModeContext)
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const colorMode = useContext(ColorModeContext);
 
   return (
     <Box sx={{ bgcolor: colors.primary[400] }}>
@@ -34,7 +34,11 @@ const Navbar = (): React.JSX.Element => {
         </div>
         <div className="icons">
           <IconButton onClick={colorMode.toggleColorMode}>
-            {theme.palette.mode === 'dark' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />}
+            {theme.palette.mode === "dark" ? (
+              <DarkModeOutlinedIcon />
+            ) : (
+              <LightModeOutlinedIcon />
+            )}
           </IconButton>
           <IconButton>
             <SearchIcon className="icon" />
@@ -63,7 +67,7 @@ const Navbar = (): React.JSX.Element => {
         </div>
       </div>
     </Box>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

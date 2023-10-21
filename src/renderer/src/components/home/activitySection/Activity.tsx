@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react";
 
-import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined'
+import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 
-import './activity.scss'
+import "./activity.scss";
 
-import user1 from '../../../assets/images/user1.png'
-import user2 from '../../../assets/images/user2.png'
-import user3 from '../../../assets/images/user3.png'
-import user4 from '../../../assets/images/user4.png'
+import user1 from "../../../assets/images/user1.png";
+import user2 from "../../../assets/images/user2.png";
+import user3 from "../../../assets/images/user3.png";
+import user4 from "../../../assets/images/user4.png";
 
 const Activity = (): React.JSX.Element => {
   return (
@@ -57,7 +57,7 @@ const Activity = (): React.JSX.Element => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Activity
+export default Activity;

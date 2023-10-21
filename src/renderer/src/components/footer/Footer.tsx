@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 
-import './footer.scss'
+import "./footer.scss";
 
 const Footer = (): React.JSX.Element => {
   return (
@@ -8,7 +8,7 @@ const Footer = (): React.JSX.Element => {
       <span>lamadmin</span>
       <span>© Lama Dev Admin Dashboard</span>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

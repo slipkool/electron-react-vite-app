@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import { ClientController } from '../controllers/clients.js'
+import { Router } from 'express';
+import { ClientController } from '../controllers/clients.js';
 
 export const createClientRouter = ({ clientModel }) => {
   const clientRouter = Router()
@@ -14,4 +14,4 @@ export const createClientRouter = ({ clientModel }) => {
   clientRouter.patch('/:id', clientController.update)
 
   return clientRouter
-}
+};

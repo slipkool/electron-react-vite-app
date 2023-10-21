@@ -1,10 +1,18 @@
-import { Router } from 'express'
-import { OrderController } from '../controllers/orders.js'
+import { Router } from 'express';
+import { OrderController } from '../controllers/orders.js';
 
-export const createOrdersRouter = ({ orderModel, clientModel, orderProductModel }) => {
+export const createOrdersRouter = ({
+  orderModel,
+  clientModel,
+  orderProductModel
+}) => {
   const orderRouter = Router()
 
-  const orderController = new OrderController({ orderModel, clientModel, orderProductModel })
+  const orderController = new OrderController({
+    orderModel,
+    clientModel,
+    orderProductModel
+  });
 
   orderRouter.get('/', orderController.getAll)
   orderRouter.post('/', orderController.create)
@@ -16,4 +24,4 @@ export const createOrdersRouter = ({ orderModel, clientModel, orderProductModel 
   orderRouter.patch('/:id', orderController.update)
 
   return orderRouter
-}
+};

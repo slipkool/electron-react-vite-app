@@ -1,20 +1,20 @@
-import React from 'react'
+import React from "react";
 
-import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined'
-import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined'
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined'
+import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 
-import './listing.scss'
+import "./listing.scss";
 
-import pet1 from '../../../assets/images/pet1.png'
-import pet2 from '../../../assets/images/pet2.png'
-import pet3 from '../../../assets/images/pet3.png'
-import pet4 from '../../../assets/images/pet4.png'
+import pet1 from "../../../assets/images/pet1.png";
+import pet2 from "../../../assets/images/pet2.png";
+import pet3 from "../../../assets/images/pet3.png";
+import pet4 from "../../../assets/images/pet4.png";
 
-import user1 from '../../../assets/images/user1.png'
-import user2 from '../../../assets/images/user2.png'
-import user3 from '../../../assets/images/user3.png'
-import user4 from '../../../assets/images/user4.png'
+import user1 from "../../../assets/images/user1.png";
+import user2 from "../../../assets/images/user2.png";
+import user3 from "../../../assets/images/user3.png";
+import user4 from "../../../assets/images/user4.png";
 
 const Listing = (): React.JSX.Element => {
   return (
@@ -106,7 +106,7 @@ const Listing = (): React.JSX.Element => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Listing
+export default Listing;

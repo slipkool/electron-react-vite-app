@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
 
-import './login.scss'
+import "./login.scss";
 
 const Login = (): React.JSX.Element => {
-  return <div>Login</div>
-}
+  return <div>Login</div>;
+};
 
-export default Login
+export default Login;
