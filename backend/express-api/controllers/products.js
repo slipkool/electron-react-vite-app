@@ -32,7 +32,7 @@ export class ProductController {
 
     if (newProduct) return res.status(201).json(newProduct)
     res
-      .status(404)
+      .status(400)
       .json({ message: 'Error al guardar la prueba de laboratorio' })
   };
 
@@ -66,7 +66,7 @@ export class ProductController {
 
     if (updatedProduct) return res.json(updatedProduct)
     res
-      .status(404)
+      .status(400)
       .json({ message: 'Error al actualizar la Prueba de laboratorio' })
   };
 }

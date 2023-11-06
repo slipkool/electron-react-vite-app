@@ -34,7 +34,7 @@ export const orderDtoToOrderModel = (orderDto: OrderDto): Order => {
     products: productDtoToProductModelList(orderDto.productos),
     total: orderDto.total,
     partialPayment: orderDto.abono,
-    images: orderDto.imagenes?.split(", "),
+    images: orderDto.imagenes?.length > 0 ? orderDto.imagenes?.split(", ") : [],
   };
   return order;
 };

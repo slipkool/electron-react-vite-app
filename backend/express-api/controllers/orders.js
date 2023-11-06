@@ -1,6 +1,7 @@
 import path from 'path';
 import * as url from 'url';
 import { validateOrder, validatePartialOrder } from '../schemas/orders.js';
+import { FILE_UPLOAD_FOLDER } from "../models/mssql/config/constants.js";
 
 export class OrderController {
   constructor ({ orderModel, clientModel, orderProductModel }) {
@@ -45,7 +46,7 @@ export class OrderController {
       await this.fillOrderInfo(newOrder, newOrder.id, newOrder.cliente_id)
       return res.status(201).json(newOrder)
     }
-    res.status(404).json({ message: 'Error al guardar la orden' })
+    res.status(400).json({ message: 'Error al guardar la orden' })
   }
 
   delete = async (req, res) => {
@@ -82,7 +83,7 @@ export class OrderController {
       )
       return res.json(updatedProduct)
     }
-    res.status(404).json({ message: 'Error al actualizar la orden' })
+    res.status(400).json({ message: 'Error al actualizar la orden' })
   }
 
   fillOrderInfo = async (order, orderId, clientId) => {
@@ -95,35 +96,21 @@ export class OrderController {
   }
 
   uploadImage = async (req, res) => {
-    if (!req.files || req.files.length === 0) {
-      return res.status(200).json({ message: 'No hay archivos para cargar' })
-    }
-
-    const { id } = req.params
-    const updatedProduct = await this.orderModel.updateImage({
-      id,
-      input: res.req.files
-    });
-
-    if (updatedProduct) {
+    const images = res.req.files?.length > 0 ? res.req.files.map((item) => item.filename).join(', ') : null;
+    if(images) {
       return res.status(200).json({
         message: "Archivos cargados satisfactoriamente",
-        files: res.req.files
-          .map((item) => {
-            return item.path
-          })
-          .join(", "),
+        files: images,
       });
     }
-    res
-      .status(404)
-      .json({ message: 'Error al actualizar las imagenes de la orden' })
+    return res.status(200).json({
+      message: "Archivos actualizados satisfactoriamente",
+    });
   }
 
   getUploadImage = async (req, res) => {
-    const FILE_UPLOAD_FOLDER = "../uploads/";
     const { id, image } = req.params
-    const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+    const __dirname = url.fileURLToPath(new URL('..', import.meta.url));
 
     const filePath = path.resolve(
       __dirname,

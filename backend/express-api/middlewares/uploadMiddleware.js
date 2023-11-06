@@ -1,84 +1,82 @@
-import multer from "multer";
-import fs from "fs";
-import path from "path";
-
-const FILE_UPLOAD_FOLDER = "./uploads/";
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { FILE_UPLOAD_FOLDER } from "../models/mssql/config/constants.js";
 
 // Configure multer storage and file name
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const { id } = req.params;
-    fs.mkdir(FILE_UPLOAD_FOLDER + id, (err) => {
-      cb(null, FILE_UPLOAD_FOLDER + id);
-    })
+    const { id } = req.params
+    const dir = FILE_UPLOAD_FOLDER + id
+    cb(null, dir)
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, file.originalname)
   }
-});
+})
+
+function fileType(file, cb) {
+  const filetypes = /png|jpg|jpeg/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  if (extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error("Por favor, cargar solo imagenes .png, .jpg, y .jpeg"));
+  }
+}
 
 // Create multer upload instance
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  fileFilter: function (req, file, cb) {
+    fileType(file, cb)
+  }
+})
 
 // Custom file upload middleware
 export const uploadMiddleware = (req, res, next) => {
   // Use multer upload instance
-  upload.array("files", 2)(req, res, (err) => {
+  upload.array('files', 2)(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ error: err.message });
+      return res.status(400).json({ message: err.message })
     }
 
     // Retrieve uploaded files
-    const files = req.files;
-    const errors = [];
+    const files = req.files
+    const errors = []
 
     if (!files || files.length === 0) {
-      next();
+      next()
     }
 
     // Validate file types and sizes
     files.forEach((file) => {
-      const allowedTypes = ["image/jpeg", "image/png"];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/octet-stream'];
+      const maxSize = 5 * 1024 * 1024 // 5MB
 
       if (!allowedTypes.includes(file.mimetype)) {
-        errors.push(`Invalid file type: ${file.originalname}`);
+        errors.push(`Tipo de archivo invalido: ${file.originalname}`)
       }
 
       if (file.size > maxSize) {
-        errors.push(`File too large: ${file.originalname}`);
+        errors.push(`Archivo demasiado pesado: ${file.originalname}`)
       }
-    });
+    })
 
     // Handle validation errors
     if (errors.length > 0) {
       // Remove uploaded files
       files.forEach((file) => {
-        fs.unlinkSync(file.path);
-      })
+        fs.unlinkSync(file.path)
+      });
 
-      return res.status(400).json({ errors });
+      return res.status(400).json({ message: errors })
     }
 
     // Attach files to the request object
-    req.files = files;
+    req.files = files
 
     // Proceed to the next middleware or route handler
-    next();
-  })
+    next()
+  });
 }
-
-export const getUploadImage = (req, res) => {
-  const { action } = req.query;
-  const filePath = path.resolve(
-    __dirname,
-    FILE_UPLOAD_FOLDER,
-    "40004/1699223961695-1A725RP.jpg",
-  );
-
-  if (action === "view") {
-    return res.sendFile(filePath);
-  } else {
-    return res.download(filePath);
-  }
-};

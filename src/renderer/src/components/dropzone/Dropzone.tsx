@@ -117,11 +117,6 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
   const handleSubmit = async (e): Promise<void> => {
     e.preventDefault();
 
-    if (!files?.length) return;
-
-    const formData = new FormData();
-    files.forEach((file) => formData.append("multi-files", file));
-
     props.setFiles(files);
     props.setOpen(false);
   };

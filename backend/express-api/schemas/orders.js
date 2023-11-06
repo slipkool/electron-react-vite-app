@@ -20,6 +20,7 @@ const orderSchema = z.object({
   partialPayment: z.number().int().nonnegative(),
   productsIds: z.array(z.number()).nonempty(),
   paid: z.boolean(),
+  images: z.string().optional().array()
 })
 
 export function validateOrder(input) {

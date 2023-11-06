@@ -131,26 +131,31 @@ const OrderForm = (): React.JSX.Element => {
         if (!order.images) {
           return;
         }
+        const filesImages = [];
         for (const image of order.images) {
-          const imagesPath = image.split("\\");
           const getUploadImageOrderDto: GetUploadImageOrderDto = {
             id: order.id,
-            image: imagesPath[imagesPath.length - 1],
+            image,
           };
           const data = await dispatchApp(
             fetchUploadImageOrder(getUploadImageOrderDto),
           ).unwrap();
           const contentType = data.headers.get("content-type");
           const blob = await data.blob();
-          const file = new File([blob], imagesPath[imagesPath.length - 1], {
+          const file = new File([blob], image, {
             contentType,
           });
-          setFiles((prev) => [...prev, Object.assign(file, { preview: "" })]);
+          filesImages.push(Object.assign(file, { preview: "" }));
         }
+        setFiles(filesImages);
       };
       fetchImages(orderSelected).catch(console.error);
     }
   }, [orderSelected]);
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
 
   const onChangePartialPayment = (event): void => {
     setValue("paid", +event.target.value === total);
@@ -197,7 +202,7 @@ const OrderForm = (): React.JSX.Element => {
       partialPayment: data.partialPayment,
       patient: data.patient,
       productsIds: productListSelected.map((product) => product.id),
-      images: [],
+      images: files?.length > 0 ? files.map((item) => item.name) : [],
       total,
     };
 
@@ -220,7 +225,7 @@ const OrderForm = (): React.JSX.Element => {
         partialPayment: data.partialPayment,
         patient: data.patient,
         productsIds: productListSelected.map((product) => product.id),
-        images: [],
+        images: files?.length > 0 ? files.map((item) => item.name) : [],
         total,
       };
 
@@ -238,7 +243,7 @@ const OrderForm = (): React.JSX.Element => {
   const createFormData = (id: number): UploadImageOrderDto => {
     const formData = new FormData();
     files.forEach((images, index) => {
-      formData.append(`files`, images);
+      formData.append("files", images);
     });
     const uploadImageOrderDto: UploadImageOrderDto = {
       id,

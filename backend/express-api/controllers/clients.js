@@ -28,7 +28,7 @@ export class ClientController {
     const newClient = await this.clientModel.create({ input: result.data })
 
     if (newClient) return res.status(201).json(newClient)
-    res.status(404).json({ message: 'Error al guardar el cliente' })
+    res.status(400).json({ message: 'Error al guardar el cliente' })
   };
 
   delete = async (req, res) => {
@@ -58,6 +58,6 @@ export class ClientController {
     });
 
     if (updatedClient) return res.json(updatedClient)
-    res.status(404).json({ message: 'Error al actualizar el cliente' })
+    res.status(400).json({ message: 'Error al actualizar el cliente' })
   };
 }
