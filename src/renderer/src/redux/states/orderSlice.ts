@@ -5,7 +5,9 @@ import {
 } from "@reduxjs/toolkit";
 import {
   CreateOrderDto,
+  GetUploadImageOrderDto,
   UpdateOrderDto,
+  UploadImageOrderDto,
   orderDtoToOrderModel,
   orderDtoToOrderModelList,
 } from "@renderer/app/dtos/order.dto";
@@ -59,6 +61,24 @@ export const updateOrder = createAsyncThunk(
   async (product: UpdateOrderDto) => {
     const result = await OrderService.updateOrder(product.id, product);
     return orderDtoToOrderModel(result);
+  },
+);
+
+export const uploadImageOrder = createAsyncThunk(
+  "products/uploadImage",
+  async (uploadImageOrderDto: UploadImageOrderDto) => {
+    const result = await OrderService.uploadImageOrder(uploadImageOrderDto);
+    return result;
+  },
+);
+
+export const fetchUploadImageOrder = createAsyncThunk(
+  "products/fetchUploadImage",
+  async (getUploadImageOrderDto: GetUploadImageOrderDto) => {
+    const result = await OrderService.fetchUploadImageOrder(
+      getUploadImageOrderDto,
+    );
+    return result;
   },
 );
 
@@ -127,6 +147,30 @@ const orderSlice = createSlice({
         }
       })
       .addCase(deleteOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? null;
+      })
+      .addCase(uploadImageOrder.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(uploadImageOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        const { id } = action.payload;
+        if (id) {
+          state.orders = state.orders.filter((ele) => ele.id !== parseInt(id));
+        }
+      })
+      .addCase(uploadImageOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? null;
+      })
+      .addCase(fetchUploadImageOrder.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUploadImageOrder.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(fetchUploadImageOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? null;
       });

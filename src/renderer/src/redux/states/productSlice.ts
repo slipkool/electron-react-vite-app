@@ -56,7 +56,6 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     searchProduct: (state, action) => {
-      console.log(action.payload);
       state.searchData = action.payload;
     },
   },

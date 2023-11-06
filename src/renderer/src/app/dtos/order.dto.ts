@@ -12,7 +12,7 @@ export interface OrderDto {
   productos: ProductDto[];
   total: number;
   abono: number;
-  imagenes: string[];
+  imagenes: string;
 }
 
 export interface CreateOrderDto
@@ -34,7 +34,7 @@ export const orderDtoToOrderModel = (orderDto: OrderDto): Order => {
     products: productDtoToProductModelList(orderDto.productos),
     total: orderDto.total,
     partialPayment: orderDto.abono,
-    images: orderDto.imagenes,
+    images: orderDto.imagenes?.split(", "),
   };
   return order;
 };
@@ -42,3 +42,13 @@ export const orderDtoToOrderModel = (orderDto: OrderDto): Order => {
 export const orderDtoToOrderModelList = (orderDtoList: OrderDto[]): Order[] => {
   return orderDtoList.map((orderDto) => orderDtoToOrderModel(orderDto));
 };
+
+export interface UploadImageOrderDto {
+  id: number;
+  formData: FormData;
+}
+
+export interface GetUploadImageOrderDto {
+  id: number;
+  image: string;
+}

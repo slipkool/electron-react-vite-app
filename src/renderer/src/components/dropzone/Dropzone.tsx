@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ErrorCode,
   FileError,
@@ -13,7 +13,10 @@ import "./dropzone.scss";
 
 type ModalProps = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setFormData: React.Dispatch<React.SetStateAction<FormData | null>>;
+  setFiles: React.Dispatch<
+    React.SetStateAction<(File & { preview: string })[]>
+  >;
+  files: (File & { preview: string })[];
 };
 
 const baseStyle: React.CSSProperties = {
@@ -49,9 +52,12 @@ const img = {
   display: "block",
   width: "100px",
   height: "100px",
+  cursor: "pointer",
 };
 
 const Dropzone = (props: ModalProps): React.JSX.Element => {
+  const [openPreview, setOpenPreview] = useState(false);
+  const [imagePreview, setImagePreview] = useState("");
   const [files, setFiles] = useState<(File & { preview: string })[]>([]);
   const [rejected, setRejected] = useState<FileRejection[]>([]);
   const maxFilesDropzone = 2;
@@ -98,6 +104,16 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
     [isFocused, isDragAccept, isDragReject],
   );
 
+  useEffect(() => {
+    if (props.files) {
+      setFiles(
+        props.files.map((file) =>
+          Object.assign(file, { preview: URL.createObjectURL(file) }),
+        ),
+      );
+    }
+  }, []);
+
   const handleSubmit = async (e): Promise<void> => {
     e.preventDefault();
 
@@ -106,7 +122,7 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
     const formData = new FormData();
     files.forEach((file) => formData.append("multi-files", file));
 
-    props.setFormData(formData);
+    props.setFiles(files);
     props.setOpen(false);
   };
 
@@ -136,6 +152,11 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
       default:
         return error.message;
     }
+  };
+
+  const previewImage = (file): void => {
+    setOpenPreview(!openPreview);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   return (
@@ -189,10 +210,10 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
                   <img
                     src={file.preview}
                     style={img}
-                    // Revoke data uri after image is loaded
                     onLoad={(): void => {
                       URL.revokeObjectURL(file.preview);
                     }}
+                    onClick={(): void => previewImage(file)}
                   />
                   <button
                     type="button"
@@ -237,6 +258,32 @@ const Dropzone = (props: ModalProps): React.JSX.Element => {
             </ul>
           </section>
         </form>
+      </div>
+
+      <div
+        id="previewModal"
+        className={`preview-modal ${openPreview ? "open" : "close"}`}
+      >
+        <span
+          className="preview-modal-close"
+          onClick={(): void => {
+            setOpenPreview(!openPreview);
+          }}
+        >
+          &times;
+        </span>
+        <img
+          className="preview-modal-modal-content"
+          id="imgPreview"
+          src={imagePreview}
+          onLoad={(): void => {
+            URL.revokeObjectURL(imagePreview);
+          }}
+          onClick={(): void => {
+            setOpenPreview(!openPreview);
+          }}
+        />
+        <div id="caption"></div>
       </div>
     </div>
   );

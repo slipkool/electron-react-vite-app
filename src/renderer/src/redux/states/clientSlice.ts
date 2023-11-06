@@ -56,7 +56,6 @@ const clientSlice = createSlice({
   initialState,
   reducers: {
     searchClient: (state, action) => {
-      console.log(action.payload);
       state.searchData = action.payload;
     },
   },

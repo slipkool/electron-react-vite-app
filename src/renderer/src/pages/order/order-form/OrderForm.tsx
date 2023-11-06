@@ -16,16 +16,23 @@ import DataTable from "@renderer/components/dataTable/DataTable";
 import { GridColDef } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
 import Dropzone from "@renderer/components/dropzone/Dropzone";
-import { CreateOrderDto, UpdateOrderDto } from "@renderer/app/dtos/order.dto";
+import {
+  CreateOrderDto,
+  GetUploadImageOrderDto,
+  UpdateOrderDto,
+  UploadImageOrderDto,
+} from "@renderer/app/dtos/order.dto";
 import {
   addOrder,
   fetchOrderById,
+  fetchUploadImageOrder,
   updateOrder,
+  uploadImageOrder,
 } from "@renderer/redux/states/orderSlice";
 import { Order } from "@renderer/app/models/order.model";
+import Alert from "@mui/material/Alert";
 
 import "./orderForm.scss";
-import Alert from "@mui/material/Alert";
 
 type AddFormValues = {
   client: number;
@@ -84,9 +91,9 @@ const OrderForm = (): React.JSX.Element => {
   const [total, setTotal] = useState(0);
   const [productSelected, setProductSelected] = useState("");
   const [productListSelected, setProductListSelected] = useState<Product[]>([]);
+  const [files, setFiles] = useState<(File & { preview: string })[]>([]);
   const [customErrors, setCustomErrors] = useState<string | null>(null);
   const [openModalImage, setOpenModalImage] = useState(false);
-  const [formData, setFormData] = useState<FormData | null>(null);
   const routeParams = useParams();
   const id = routeParams.id ?? 0;
   const isAddMode = !id;
@@ -119,6 +126,29 @@ const OrderForm = (): React.JSX.Element => {
       setValue("partialPayment", orderSelected.partialPayment);
       setValue("client", orderSelected.client.id);
       setProductListSelected(orderSelected.products);
+
+      const fetchImages = async (order: Order): Promise<void> => {
+        if (!order.images) {
+          return;
+        }
+        for (const image of order.images) {
+          const imagesPath = image.split("\\");
+          const getUploadImageOrderDto: GetUploadImageOrderDto = {
+            id: order.id,
+            image: imagesPath[imagesPath.length - 1],
+          };
+          const data = await dispatchApp(
+            fetchUploadImageOrder(getUploadImageOrderDto),
+          ).unwrap();
+          const contentType = data.headers.get("content-type");
+          const blob = await data.blob();
+          const file = new File([blob], imagesPath[imagesPath.length - 1], {
+            contentType,
+          });
+          setFiles((prev) => [...prev, Object.assign(file, { preview: "" })]);
+        }
+      };
+      fetchImages(orderSelected).catch(console.error);
     }
   }, [orderSelected]);
 
@@ -160,7 +190,7 @@ const OrderForm = (): React.JSX.Element => {
     isAddMode ? create(data) : update(parseInt(id), data);
   };
 
-  const create = (data: AddFormValues): void => {
+  const create = async (data: AddFormValues): Promise<void> => {
     const newOrder: CreateOrderDto = {
       clientId: +data.client,
       paid: data.paid,
@@ -171,16 +201,17 @@ const OrderForm = (): React.JSX.Element => {
       total,
     };
 
-    dispatchApp(addOrder(newOrder))
-      .unwrap()
-      .then(() => navigate("/orders"))
-      .catch((error) => {
-        setMessageService(error.message);
-        setOpenDialog(true);
-      });
+    try {
+      const result = await dispatchApp(addOrder(newOrder)).unwrap();
+      await dispatchApp(uploadImageOrder(createFormData(result.id))).unwrap();
+      navigate("/orders");
+    } catch (error) {
+      setMessageService(error.message);
+      setOpenDialog(true);
+    }
   };
 
-  const update = (id: number, data: AddFormValues): void => {
+  const update = async (id: number, data: AddFormValues): Promise<void> => {
     if (id) {
       const order: UpdateOrderDto = {
         id,
@@ -193,14 +224,27 @@ const OrderForm = (): React.JSX.Element => {
         total,
       };
 
-      dispatchApp(updateOrder(order))
-        .unwrap()
-        .then(() => navigate("/orders"))
-        .catch((error) => {
-          setMessageService(error.message);
-          setOpenDialog(true);
-        });
+      try {
+        await dispatchApp(updateOrder(order)).unwrap();
+        await dispatchApp(uploadImageOrder(createFormData(id))).unwrap();
+        navigate("/orders");
+      } catch (error) {
+        setMessageService(error.message);
+        setOpenDialog(true);
+      }
     }
+  };
+
+  const createFormData = (id: number): UploadImageOrderDto => {
+    const formData = new FormData();
+    files.forEach((images, index) => {
+      formData.append(`files`, images);
+    });
+    const uploadImageOrderDto: UploadImageOrderDto = {
+      id,
+      formData,
+    };
+    return uploadImageOrderDto;
   };
 
   const isValidOrder = (data: AddFormValues): boolean => {
@@ -218,13 +262,13 @@ const OrderForm = (): React.JSX.Element => {
     return true;
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setOpenDialog(false);
   };
 
   return (
     <div className="order">
-      <h1>Nueva Orden</h1>
+      <h1>{isAddMode ? "Nueva" : "Editar"} Orden</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="item">
           <label>Nombre del cliente</label>
@@ -318,7 +362,11 @@ const OrderForm = (): React.JSX.Element => {
         <button className="btn">Guardar</button>
       </form>
       {openModalImage && (
-        <Dropzone setOpen={setOpenModalImage} setFormData={setFormData} />
+        <Dropzone
+          setOpen={setOpenModalImage}
+          setFiles={setFiles}
+          files={files}
+        />
       )}
 
       <Dialog

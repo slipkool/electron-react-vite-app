@@ -116,7 +116,7 @@ export class OrderModel {
         .input('total', input.total)
         .input("partialPayment", input.partialPayment).query(`UPDATE ordenes
       SET cliente_id = @clientId, paciente = @patient, pagado = @paid, total = @total, abono = @partialPayment, fecha_actualizacion = GETDATE()
-      WHERE id = @id`)
+      WHERE orden_id = @id`)
 
       if (rs.rowsAffected[0] > 0) {
         const rs = await pool
@@ -151,5 +151,36 @@ export class OrderModel {
     }
 
     return null
+  }
+
+  static async updateImage ({ id, input }) {
+    try {
+      const order = await this.getById({ id });
+      if (!order) {
+        return null;
+      }
+
+      const pool = await connection;
+      const rs = await pool
+        .request()
+        .input("id", id)
+        .input(
+          "images",
+          input
+            .map((item) => {
+              return item.path
+            })
+            .join(', '),
+        ).query(`UPDATE ordenes
+      SET imagenes = @images, fecha_actualizacion = GETDATE()
+      WHERE orden_id = @id`)
+
+      if (rs.rowsAffected[0] > 0) {
+        const order = await this.getById({ id });
+        return order;
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
