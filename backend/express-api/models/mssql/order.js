@@ -6,7 +6,8 @@ export class OrderModel {
     const pool = await connection
     const rs = await pool.request()
       .query(`SELECT orden_id as id, cliente_id, fecha_creacion, paciente, pagado, fecha_baja, total, abono, imagenes, fecha_actualizacion
-      FROM ordenes`)
+      FROM ordenes
+      WHERE fecha_baja IS NULL`)
 
     return rs.recordset
   }
@@ -84,15 +85,9 @@ export class OrderModel {
         let rs = await pool
           .request()
           .input('id', id)
-          .query('DELETE FROM ordenes_pruebas WHERE orden_id = @id');
+          .query('UPDATE ordenes SET fecha_baja = GETDATE() WHERE orden_id = @id');
 
-        if (rs.rowsAffected[0] > 0) {
-          rs = await pool
-            .request()
-            .input('id', id)
-            .query('DELETE FROM ordenes WHERE orden_id = @id');
           return rs.rowsAffected[0] > 0
-        }
       }
     } catch (error) {
       console.log(error)
