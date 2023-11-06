@@ -30,9 +30,10 @@ export class OrderModel {
         paid,
         total,
         partialPayment,
-        images,
         productsIds
       } = input
+
+      const images = input.images?.length > 0 ? input.images.join(', ') : null;
 
       const pool = await connection
       const rs = await pool

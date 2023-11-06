@@ -1,5 +1,4 @@
-import express from 'express';
-import asyncify from 'express-asyncify';
+import { Router } from 'express';
 import { OrderController } from '../controllers/orders.js';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware.js';
 import { createDirectoryMiddleware } from '../middlewares/createDirectoryMiddleware.js';
@@ -9,7 +8,7 @@ export const createOrdersRouter = ({
   clientModel,
   orderProductModel
 }) => {
-  const orderRouter = asyncify(express.Router());
+  const orderRouter = Router();
 
   const orderController = new OrderController({
     orderModel,

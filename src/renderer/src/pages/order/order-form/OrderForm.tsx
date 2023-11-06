@@ -153,10 +153,6 @@ const OrderForm = (): React.JSX.Element => {
     }
   }, [orderSelected]);
 
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
-
   const onChangePartialPayment = (event): void => {
     setValue("paid", +event.target.value === total);
   };
